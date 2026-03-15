@@ -1,7 +1,7 @@
 class CreateAdClicks < ActiveRecord::Migration[7.0]
   def change
     create_table :ad_clicks do |t|
-      t.references :banner, null: false, foreign_key: true
+      t.references :banner, null: false, foreign_key: { to_table: :ad_banners }
       t.references :placement, null: false, foreign_key: { to_table: :ad_placements }
       t.string :session_id
       t.string :ip_address
