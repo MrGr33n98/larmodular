@@ -2,7 +2,7 @@ class CreateAdBanners < ActiveRecord::Migration[7.0]
   def change
     create_table :ad_banners do |t|
       t.references :campaign, null: false, foreign_key: { to_table: :ad_campaigns }
-      t.references :placement, null: false, foreign_key: true
+      t.references :placement, null: false, foreign_key: { to_table: :ad_placements }
       t.string :name
       t.string :image_url, null: false
       t.string :target_url, null: false
