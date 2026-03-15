@@ -17,7 +17,7 @@ RUN gem install rails -v 7.0.6 && \
     gem install bundler
 
 # Copy Gemfile and install dependencies
-COPY Gemfile Gemfile.lock /app/
+COPY backend/Gemfile backend/Gemfile.lock /app/
 
 WORKDIR /app
 
