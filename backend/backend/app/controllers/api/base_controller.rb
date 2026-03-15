@@ -47,7 +47,7 @@ module Api
     end
     
     def paginate(collection)
-      paginator = Kaminari.pagination_array(collection)
+      paginator = Kaminari.paginate_array(collection)
       {
         current_page: paginator.current_page,
         next_page: paginator.next_page,
