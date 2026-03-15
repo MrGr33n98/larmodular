@@ -4,6 +4,7 @@ module Api
     skip_before_action :verify_authenticity_token
     before_action :set_default_response_format
     before_action :authenticate_user_from_token!, unless: :devise_controller?
+    before_action :authenticate_user!, unless: :devise_controller?
     before_action :check_rate_limit, only: [:create, :update, :destroy]
     
     helper_method :current_user, :user_signed_in?
