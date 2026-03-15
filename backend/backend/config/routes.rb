@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get 'health', to: ->(env) { [200, {}, ['OK']] }
+  
   devise_for :admin_users, ActiveAdmin::Devise.config
   ActiveAdmin.routes(self)
   get 'users/profile'
