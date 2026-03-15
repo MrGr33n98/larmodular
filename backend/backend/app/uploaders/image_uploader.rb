@@ -7,7 +7,6 @@ class ImageUploader < Shrine
   plugin :validation
   plugin :processing
   plugin :versions
-  plugin :delete_promoted
 
   process(:store) do |io, context|
     original = io.download
