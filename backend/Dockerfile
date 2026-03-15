@@ -27,6 +27,7 @@ RUN bundle config set --local deployment 'false' && \
 
 # Copy application code
 COPY backend/ /app/
+COPY config/ /app/config/
 
 # Create non-root user
 RUN useradd -m -s /bin/bash rails && \
