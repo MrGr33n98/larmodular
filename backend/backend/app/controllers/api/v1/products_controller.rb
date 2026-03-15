@@ -23,7 +23,7 @@ module Api
         products = products.page(params[:page]).per(params[:per_page] || 20)
         
         render_success(
-          ProductSerializer.new(products).as_json,
+          products.map { |p| ProductSerializer.new(p).as_json },
           nil,
           { pagination: paginate(products) }
         )
