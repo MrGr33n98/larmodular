@@ -28,8 +28,6 @@ class CreateCompanies < ActiveRecord::Migration[7.0]
     end
 
     add_index :companies, :slug, unique: true
-    add_index :companies, :region_id
-    add_index :companies, :city_id
     add_index :companies, :status
     add_index :companies, :featured
   end
