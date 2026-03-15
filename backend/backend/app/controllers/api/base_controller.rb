@@ -47,7 +47,13 @@ module Api
     end
     
     def paginate(collection)
-      paginator = Kaminari.paginate_array(collection)
+      # If collection is already paginated (Kaminari relation), use it directly
+      # Otherwise, paginate the array
+      if collection.respond_to?(:current_page)
+        paginator = collection
+      else
+        paginator = Kaminari.paginate_array(collection.to_a)
+      end
       {
         current_page: paginator.current_page,
         next_page: paginator.next_page,
