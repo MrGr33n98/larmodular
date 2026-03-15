@@ -8,7 +8,8 @@ module Api
           .includes(:company, :category)
           .by_category(params[:category_id])
           .by_company(params[:company_id])
-          .featured(params[:featured] == 'true')
+        
+        products = products.featured if params[:featured] == 'true'
         
         if params[:search].present?
           products = products.where("name ILIKE ?", "%#{params[:search]}%")
