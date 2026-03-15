@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+:root {
+  --background: #F5F1EB;
+  --background-secondary: #EDE8E1;
+  --foreground: #2C2416;
+  --foreground-muted: #5C5347;
+  
+  --color-terracota: #C67B5C;
+  --color-terracota-dark: #A85D3F;
+  --color-terracota-light: #D99B7F;
+  --color-floresta: #4A6741;
+  --color-floresta-dark: #3A5233;
+  --color-floresta-light: #6B8B5E;
+  --color-horizonte: #5B8FB9;
+  --color-horizonte-dark: #4A7A9E;
+  --color-horizonte-light: #7BA8CC;
+  --color-areia: #F5F1EB;
+  --color-areia-escuro: #E8E2D6;
+  --color-creme: #FAF7F2;
+  --color-argila: #8B7355;
+  
+  --shadow-soft: 0 4px 20px rgba(44, 36, 22, 0.08);
+  --shadow-medium: 0 8px 30px rgba(44, 36, 22, 0.12);
+  --shadow-elevated: 0 12px 40px rgba(44, 36, 22, 0.16);
+  
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-background-secondary: var(--background-secondary);
+  --color-foreground: var(--foreground);
+  --color-foreground-muted: var(--foreground-muted);
+  
+  --color-terracota: var(--color-terracota);
+  --color-terracota-dark: var(--color-terracota-dark);
+  --color-terracota-light: var(--color-terracota-light);
+  --color-floresta: var(--color-floresta);
+  --color-floresta-dark: var(--color-floresta-dark);
+  --color-floresta-light: var(--color-floresta-light);
+  --color-horizonte: var(--color-horizonte);
+  --color-horizonte-dark: var(--color-horizonte-dark);
+  --color-horizonte-light: var(--color-horizonte-light);
+  --color-areia: var(--color-areia);
+  --color-areia-escuro: var(--color-areia-escuro);
+  --color-creme: var(--color-creme);
+  --color-argila: var(--color-argila);
+  
+  --font-serif: var(--font-serif);
+  --font-sans: var(--font-sans);
+  
+  --shadow-soft: var(--shadow-soft);
+  --shadow-medium: var(--shadow-medium);
+  --shadow-elevated: var(--shadow-elevated);
+  
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.texture-paper {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+}
+
+.texture-linen {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
+}
+
+.organic-border {
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(139, 115, 85, 0.15);
+}
+
+.organic-shadow {
+  box-shadow: 
+    0 4px 20px rgba(44, 36, 22, 0.06),
+    0 1px 3px rgba(44, 36, 22, 0.04);
+}
+
+.organic-shadow-hover {
+  box-shadow: 
+    0 8px 30px rgba(44, 36, 22, 0.1),
+    0 2px 8px rgba(44, 36, 22, 0.06);
+  transition: all 0.3s ease;
+}
