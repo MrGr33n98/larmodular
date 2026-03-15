@@ -1,4 +1,4 @@
-class AddCoverImageToCompaniesAndProducts < ActiveRecord::Migration[7.0]
+class AddCoverImages < ActiveRecord::Migration[7.0]
   def change
     add_column :companies, :cover_data, :jsonb
     add_column :companies, :logo_data, :jsonb
