@@ -26,8 +26,6 @@ class CreateProducts < ActiveRecord::Migration[7.0]
     end
 
     add_index :products, :slug, unique: true
-    add_index :products, :company_id
-    add_index :products, :category_id
     add_index :products, :active
     add_index :products, :featured
     add_index :products, :base_price

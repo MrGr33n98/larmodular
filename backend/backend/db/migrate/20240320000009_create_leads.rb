@@ -19,8 +19,6 @@ class CreateLeads < ActiveRecord::Migration[7.0]
       t.timestamps
     end
 
-    add_index :leads, :company_id
-    add_index :leads, :region_id
     add_index :leads, :email
     add_index :leads, :intent_score
     add_index :leads, :funnel_stage

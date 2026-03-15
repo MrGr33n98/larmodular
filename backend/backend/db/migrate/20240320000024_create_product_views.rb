@@ -14,8 +14,6 @@ class CreateProductViews < ActiveRecord::Migration[7.0]
       t.timestamps
     end
 
-    add_index :product_views, :product_id
-    add_index :product_views, :user_id
     add_index :product_views, :session_id
     add_index :product_views, :created_at
   end

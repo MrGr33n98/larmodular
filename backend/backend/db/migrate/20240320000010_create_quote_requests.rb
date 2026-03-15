@@ -19,9 +19,6 @@ class CreateQuoteRequests < ActiveRecord::Migration[7.0]
       t.timestamps
     end
 
-    add_index :quote_requests, :product_id
-    add_index :quote_requests, :company_id
-    add_index :quote_requests, :lead_id
     add_index :quote_requests, :status
     add_index :quote_requests, :converted
   end

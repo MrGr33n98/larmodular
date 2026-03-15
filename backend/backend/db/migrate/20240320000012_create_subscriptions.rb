@@ -16,8 +16,6 @@ class CreateSubscriptions < ActiveRecord::Migration[7.0]
       t.timestamps
     end
 
-    add_index :subscriptions, :user_id
-    add_index :subscriptions, :plan_id
     add_index :subscriptions, :status
     add_index :subscriptions, :stripe_subscription_id, unique: true
   end

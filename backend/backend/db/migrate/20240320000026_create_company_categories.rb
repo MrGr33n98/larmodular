@@ -1,8 +1,8 @@
 class CreateCompanyCategories < ActiveRecord::Migration[7.0]
   def change
     create_table :company_categories do |t|
-      t.references :company, null: false, foreign_key: true
-      t.references :category, null: false, foreign_key: true
+      t.references :company, null: false, foreign_key: true, index: false
+      t.references :category, null: false, foreign_key: true, index: false
 
       t.timestamps
     end

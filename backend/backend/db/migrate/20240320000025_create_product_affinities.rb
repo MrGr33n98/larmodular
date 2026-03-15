@@ -1,8 +1,8 @@
 class CreateProductAffinities < ActiveRecord::Migration[7.0]
   def change
     create_table :product_affinities do |t|
-      t.references :product_a, null: false, foreign_key: { to_table: :products }
-      t.references :product_b, null: false, foreign_key: { to_table: :products }
+      t.references :product_a, null: false, foreign_key: { to_table: :products }, index: false
+      t.references :product_b, null: false, foreign_key: { to_table: :products }, index: false
       t.decimal :score, precision: 5, scale: 2, default: 0
       t.integer :views_together_count, default: 0
       t.integer :purchases_together_count, default: 0

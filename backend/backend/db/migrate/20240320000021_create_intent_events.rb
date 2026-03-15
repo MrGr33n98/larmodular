@@ -17,9 +17,7 @@ class CreateIntentEvents < ActiveRecord::Migration[7.0]
       t.timestamps
     end
 
-    add_index :intent_events, :lead_id
     add_index :intent_events, :session_id
-    add_index :intent_events, :user_id
     add_index :intent_events, :event_type
     add_index :intent_events, :created_at
   end

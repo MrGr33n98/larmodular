@@ -13,7 +13,6 @@ class CreateAdImpressions < ActiveRecord::Migration[7.0]
       t.timestamps
     end
 
-    add_index :ad_impressions, :banner_id
     add_index :ad_impressions, :session_id
     add_index :ad_impressions, :created_at
   end

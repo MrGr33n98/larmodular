@@ -15,7 +15,6 @@ class CreateAdCampaigns < ActiveRecord::Migration[7.0]
       t.timestamps
     end
 
-    add_index :ad_campaigns, :advertiser_id
     add_index :ad_campaigns, :status
     add_index :ad_campaigns, :active
   end

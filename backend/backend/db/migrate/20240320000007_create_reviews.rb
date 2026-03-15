@@ -17,9 +17,6 @@ class CreateReviews < ActiveRecord::Migration[7.0]
       t.timestamps
     end
 
-    add_index :reviews, :company_id
-    add_index :reviews, :product_id
-    add_index :reviews, :user_id
     add_index :reviews, :rating
     add_index :reviews, :status
   end

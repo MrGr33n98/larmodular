@@ -13,7 +13,6 @@ class CreateAdClicks < ActiveRecord::Migration[7.0]
       t.timestamps
     end
 
-    add_index :ad_clicks, :banner_id
     add_index :ad_clicks, :session_id
     add_index :ad_clicks, :created_at
   end

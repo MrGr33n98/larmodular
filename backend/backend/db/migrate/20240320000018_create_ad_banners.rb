@@ -17,8 +17,6 @@ class CreateAdBanners < ActiveRecord::Migration[7.0]
       t.timestamps
     end
 
-    add_index :ad_banners, :campaign_id
-    add_index :ad_banners, :placement_id
     add_index :ad_banners, :active
     add_index :ad_banners, :approved
   end

@@ -17,8 +17,6 @@ class CreatePayments < ActiveRecord::Migration[7.0]
       t.timestamps
     end
 
-    add_index :payments, :subscription_id
-    add_index :payments, :user_id
     add_index :payments, :stripe_payment_intent_id, unique: true
     add_index :payments, :status
   end

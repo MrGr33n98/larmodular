@@ -18,7 +18,6 @@ class CreateIntentSessions < ActiveRecord::Migration[7.0]
     end
 
     add_index :intent_sessions, :session_id, unique: true
-    add_index :intent_sessions, :lead_id
     add_index :intent_sessions, :started_at
   end
 end
