@@ -65,8 +65,8 @@ services:
 
   frontend:
     build:
-      context: ./frontend
-      dockerfile: ./Dockerfile
+      context: .
+      dockerfile: frontend/Dockerfile
     image: larmodular-frontend:latest
     container_name: larmodular-frontend-prod
     restart: always
