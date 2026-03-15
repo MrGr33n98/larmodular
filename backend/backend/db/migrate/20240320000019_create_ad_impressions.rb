@@ -2,7 +2,7 @@ class CreateAdImpressions < ActiveRecord::Migration[7.0]
   def change
     create_table :ad_impressions do |t|
       t.references :banner, null: false, foreign_key: true
-      t.references :placement, null: false, foreign_key: true
+      t.references :placement, null: false, foreign_key: { to_table: :ad_placements }
       t.string :session_id
       t.string :ip_address
       t.references :region, foreign_key: true
