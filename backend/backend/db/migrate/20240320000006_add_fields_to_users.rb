@@ -1,6 +1,5 @@
 class AddFieldsToUsers < ActiveRecord::Migration[7.0]
   def change
-    add_column :users, :name, :string
     add_column :users, :phone, :string
     add_column :users, :avatar_url, :string
     add_column :users, :role, :string, default: 'buyer' # buyer, seller, admin
