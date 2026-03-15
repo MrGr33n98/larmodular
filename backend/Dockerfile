@@ -17,14 +17,14 @@ RUN gem install rails -v 7.0.6 && \
     gem install bundler
 
 # Copy Gemfile and install dependencies
-COPY backend/Gemfile backend/Gemfile.lock ./
+COPY Gemfile Gemfile.lock ./
 
 RUN bundle config set --local deployment 'false' && \
     bundle config set --local without 'development test' && \
     bundle install --jobs 4 --retry 3
 
 # Copy application code
-COPY backend/ ./
+COPY . ./
 
 # Create non-root user
 RUN useradd -m -s /bin/bash rails && \

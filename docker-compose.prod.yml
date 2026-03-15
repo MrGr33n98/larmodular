@@ -1,10 +1,10 @@
-version: '3.8'
-
 services:
   postgres:
     image: postgres:15-alpine
     container_name: larmodular-db-prod
     restart: always
+    env_file:
+      - .env
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -35,10 +35,13 @@ services:
 
   backend:
     build:
-      context: .
-      dockerfile: backend/Dockerfile
+      context: ./backend/backend
+      dockerfile: ../../backend/Dockerfile
+    image: larmodular-backend:latest
     container_name: larmodular-backend-prod
     restart: always
+    env_file:
+      - .env
     environment:
       RAILS_ENV: production
       DATABASE_HOST: postgres
@@ -62,8 +65,9 @@ services:
 
   frontend:
     build:
-      context: frontend
-      dockerfile: ../Dockerfile
+      context: ./frontend
+      dockerfile: ./Dockerfile
+    image: larmodular-frontend:latest
     container_name: larmodular-frontend-prod
     restart: always
     environment:

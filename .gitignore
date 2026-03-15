@@ -73,6 +73,7 @@ temp/
 docs/
 
 # Secrets
+docs/secrets.env
 credentials.yml.enc
 master.key
 *.key

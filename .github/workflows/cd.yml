@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - develop
   workflow_dispatch:
     inputs:
       environment:
@@ -86,6 +87,18 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
+      - name: Create deployed-images.txt
+        run: |
+          echo "${{ steps.meta-backend.outputs.tags }}" > deployed-images.txt
+          echo "${{ steps.meta-frontend.outputs.tags }}" >> deployed-images.txt
+
+      - name: Upload deployed images info
+        uses: actions/upload-artifact@v4
+        with:
+          name: deployed-images
+          path: deployed-images.txt
+          retention-days: 1
+
   # Deploy to Staging
   deploy-staging:
     name: Deploy to Staging
@@ -97,12 +110,64 @@ jobs:
       url: https://staging.larmodular.com.br
     
     steps:
-      - name: Deploy to Staging
+      - name: Checkout deployment scripts
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            deploy
+            docker-compose.prod.yml
+          sparse-checkout-cone-mode: false
+
+      - name: Download deployed images info
+        uses: actions/download-artifact@v4
+        with:
+          name: deployed-images
+
+      - name: Read image tags
+        id: images
         run: |
-          echo "Deploying to Staging..."
-          # Add your deployment commands here
-          # Examples: kubectl, terraform, ansible, etc.
-          
+          BACKEND_IMAGE=$(sed -n '1p' deployed-images.txt)
+          FRONTEND_IMAGE=$(sed -n '2p' deployed-images.txt)
+          echo "backend-image=$BACKEND_IMAGE" >> $GITHUB_OUTPUT
+          echo "frontend-image=$FRONTEND_IMAGE" >> $GITHUB_OUTPUT
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST_STAGING }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            cd /home/ubuntu/larmodular
+            
+            # Set environment variables
+            export BACKEND_IMAGE="${{ steps.images.outputs.backend-image }}"
+            export FRONTEND_IMAGE="${{ steps.images.outputs.frontend-image }}"
+            
+            # Create .env file
+            cat > .env << EOF
+            BACKEND_IMAGE=$BACKEND_IMAGE
+            FRONTEND_IMAGE=$FRONTEND_IMAGE
+            POSTGRES_USER=postgres
+            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+            POSTGRES_DB=larmodular_production
+            SECRET_KEY_BASE=${{ secrets.SECRET_KEY_BASE }}
+            JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+            REDIS_URL=redis://redis:6379
+            NEXT_PUBLIC_API_URL=https://staging.larmodular.com.br
+            EOF
+            
+            # Login to GHCR
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+            
+            # Pull and restart containers
+            docker-compose -f docker-compose.prod.yml pull
+            docker-compose -f docker-compose.prod.yml up -d
+            
+            # Run migrations
+            docker-compose -f docker-compose.prod.yml exec -T backend bundle exec rails db:migrate || true
+
       - name: Notify deployment
         if: always()
         uses: slackapi/slack-github-action@v1.25.0
@@ -134,12 +199,64 @@ jobs:
       url: https://larmodular.com.br
     
     steps:
-      - name: Deploy to Production
+      - name: Checkout deployment scripts
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            deploy
+            docker-compose.prod.yml
+          sparse-checkout-cone-mode: false
+
+      - name: Download deployed images info
+        uses: actions/download-artifact@v4
+        with:
+          name: deployed-images
+
+      - name: Read image tags
+        id: images
         run: |
-          echo "Deploying to Production..."
-          # Add your deployment commands here
-          # Examples: kubectl, terraform, ansible, etc.
-          
+          BACKEND_IMAGE=$(sed -n '1p' deployed-images.txt)
+          FRONTEND_IMAGE=$(sed -n '2p' deployed-images.txt)
+          echo "backend-image=$BACKEND_IMAGE" >> $GITHUB_OUTPUT
+          echo "frontend-image=$FRONTEND_IMAGE" >> $GITHUB_OUTPUT
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST_PRODUCTION }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            cd /home/ubuntu/larmodular
+            
+            # Set environment variables
+            export BACKEND_IMAGE="${{ steps.images.outputs.backend-image }}"
+            export FRONTEND_IMAGE="${{ steps.images.outputs.frontend-image }}"
+            
+            # Create .env file
+            cat > .env << EOF
+            BACKEND_IMAGE=$BACKEND_IMAGE
+            FRONTEND_IMAGE=$FRONTEND_IMAGE
+            POSTGRES_USER=postgres
+            POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+            POSTGRES_DB=larmodular_production
+            SECRET_KEY_BASE=${{ secrets.SECRET_KEY_BASE }}
+            JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+            REDIS_URL=redis://redis:6379
+            NEXT_PUBLIC_API_URL=https://larmodular.com.br
+            EOF
+            
+            # Login to GHCR
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+            
+            # Pull and restart containers
+            docker-compose -f docker-compose.prod.yml pull
+            docker-compose -f docker-compose.prod.yml up -d
+            
+            # Run migrations
+            docker-compose -f docker-compose.prod.yml exec -T backend bundle exec rails db:migrate || true
+
       - name: Notify deployment
         if: always()
         uses: slackapi/slack-github-action@v1.25.0
