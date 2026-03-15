@@ -11,7 +11,7 @@ class CreateSubscriptions < ActiveRecord::Migration[7.0]
       t.datetime :current_period_end
       t.datetime :canceled_at
       t.boolean :cancel_at_period_end, default: false
-      t.text :metadata, default: {}
+      t.text :metadata, default: "{}"
 
       t.timestamps
     end
