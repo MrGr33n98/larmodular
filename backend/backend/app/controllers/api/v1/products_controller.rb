@@ -4,29 +4,50 @@ module Api
       before_action :authenticate_user!, except: [:index, :show]
       
       def index
-        products = Product.active
-          .includes(:company, :category)
-          .by_category(params[:category_id])
-          .by_company(params[:company_id])
-        
-        products = products.featured if params[:featured] == 'true'
-        
-        if params[:search].present?
-          products = products.where("name ILIKE ?", "%#{params[:search]}%")
+        per_page = (params[:per_page] || 20).to_i
+
+        if params[:cursor].present?
+          cursor_id = params[:cursor].to_i
+          products = Product.active
+            .includes(:company, :category)
+            .by_category(params[:category_id])
+            .by_company(params[:company_id])
+            .where('id > ?', cursor_id)
+            .order(id: :asc)
+            .limit(per_page)
+          next_cursor = products.size == per_page ? products.last.id : nil
+          has_more = next_cursor.present?
+          meta = { next_cursor: next_cursor, has_more: has_more }
+          render_success(
+            products.map { |p| ProductSerializer.new(p).as_json },
+            nil,
+            meta
+          )
+        else
+          products = Product.active
+            .includes(:company, :category)
+            .by_category(params[:category_id])
+            .by_company(params[:company_id])
+          
+          products = products.featured if params[:featured] == 'true'
+          
+          if params[:search].present?
+            products = products.where("name ILIKE ?", "%#{params[:search]}%")
+          end
+          
+          if params[:price_min].present? && params[:price_max].present?
+            products = products.price_range(params[:price_min], params[:price_max])
+          end
+          
+          products = products.order(featured: :desc, views_count: :desc)
+          products = products.page(params[:page]).per(per_page)
+          
+          render_success(
+            products.map { |p| ProductSerializer.new(p).as_json },
+            nil,
+            { pagination: paginate(products) }
+          )
         end
-        
-        if params[:price_min].present? && params[:price_max].present?
-          products = products.price_range(params[:price_min], params[:price_max])
-        end
-        
-        products = products.order(featured: :desc, views_count: :desc)
-        products = products.page(params[:page]).per(params[:per_page] || 20)
-        
-        render_success(
-          products.map { |p| ProductSerializer.new(p).as_json },
-          nil,
-          { pagination: paginate(products) }
-        )
       end
       
       def show

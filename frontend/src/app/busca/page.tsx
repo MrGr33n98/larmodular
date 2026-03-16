@@ -18,6 +18,8 @@ function SearchContent() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
+  const [cursor, setCursor] = useState<string | null>(null);
+  const [hasMore, setHasMore] = useState<boolean>(true);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
@@ -55,25 +57,39 @@ function SearchContent() {
       setLoading(true);
       try {
         const params = new URLSearchParams();
-        params.append('page', currentPage.toString());
-        params.append('per_page', perPage.toString());
+        if (cursor) { 
+          params.append('cursor', cursor);
+          params.append('per_page', perPage.toString());
+        } else {
+          params.append('page', currentPage.toString());
+          params.append('per_page', perPage.toString());
+        }
         if (filters.q) params.append('search', filters.q);
         if (filters.categoria) params.append('category_id', filters.categoria);
         if (filters.destaque) params.append('featured', 'true');
         if (filters.precoMin) params.append('price_min', filters.precoMin);
         if (filters.precoMax) params.append('price_max', filters.precoMax);
 
-        const [productsRes] = await Promise.all([
-          api.get<{ data: Product[]; meta?: any }>(`/products?${params.toString()}`),
-        ]);
-
-        setProducts(productsRes.data.data || []);
+        const res = await api.get<{ data: Product[]; meta?: any }>(`/products?${params.toString()}`);
+        const data = res.data.data || [];
+        setProducts(data);
+        if (res.data.meta?.next_cursor) {
+          setCursor(res.data.meta.next_cursor);
+          setHasMore(true);
+        } else if (data.length === perPage && data.length > 0) {
+          // Fallback: use last id as cursor for next page
+          setCursor(String(data[data.length - 1].id));
+          setHasMore(true);
+        } else {
+          setHasMore(false);
+        }
         
-        if (productsRes.data.meta?.pagination) {
+        // Keep existing pagination info if available (for backward compatibility)
+        if (res.data.meta?.pagination) {
           setPagination({
-            currentPage: productsRes.data.meta.pagination.current_page || currentPage,
-            totalPages: productsRes.data.meta.pagination.total_pages || 1,
-            totalCount: productsRes.data.meta.pagination.total_count || 0,
+            currentPage: res.data.meta.pagination.current_page || currentPage,
+            totalPages: res.data.meta.pagination.total_pages || 1,
+            totalCount: res.data.meta.pagination.total_count || 0,
           });
         }
       } catch (error) {
@@ -91,16 +107,26 @@ function SearchContent() {
   };
 
   const handleLoadMore = async () => {
-    const nextPage = currentPage + 1;
+    if (!hasMore) return;
     const params = new URLSearchParams();
-    params.append('page', nextPage.toString());
+    if (cursor) params.append('cursor', cursor);
     params.append('per_page', perPage.toString());
     if (filters.q) params.append('search', filters.q);
     if (filters.categoria) params.append('category_id', filters.categoria);
+    if (filters.destaque) params.append('featured', 'true');
+    if (filters.precoMin) params.append('price_min', filters.precoMin);
+    if (filters.precoMax) params.append('price_max', filters.precoMax);
 
     try {
-      const res = await api.get<{ data: Product[] }>(`/products?${params.toString()}`);
-      setProducts(prev => [...prev, ...(res.data.data || [])]);
+      const res = await api.get<{ data: Product[]; meta?: any }>(`/products?${params.toString()}`);
+      const data = res.data.data || [];
+      if (data.length > 0) setProducts(prev => [...prev, ...data]);
+      if (res.data.meta?.next_cursor) {
+        setCursor(res.data.meta.next_cursor);
+        setHasMore(true);
+      } else {
+        setHasMore(false);
+      }
     } catch (error) {
       console.error('Error loading more:', error);
     }
@@ -259,10 +285,9 @@ function SearchContent() {
                 ))}
               </div>
 
-              <Pagination
-                currentPage={pagination.currentPage}
-                totalPages={pagination.totalPages}
-              />
+              {hasMore && (
+                <LoadMore onLoadMore={handleLoadMore} isLoading={loading} hasMore={hasMore} />
+              )}
             </>
           ) : (
             <div className="text-center py-12">
