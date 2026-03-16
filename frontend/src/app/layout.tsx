@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Merriweather } from "next/font/google";
+import { Inter, Merriweather, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
@@ -16,6 +16,11 @@ const merriweather = Merriweather({
   variable: "--font-serif",
 });
 
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-jakarta",
+});
+
 export const metadata: Metadata = {
   title: "LARModular - Tiny Houses, Containers e Construções Modulares",
   description: "O marketplace definitivo para Tiny Houses, Containers e Construções Modulares no Brasil. Encontre as melhores opções de moradia modular.",
@@ -29,7 +34,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={`${inter.variable} ${merriweather.variable} font-sans min-h-screen flex flex-col bg-areia texture-paper`}>
+      <body className={`${inter.variable} ${merriweather.variable} ${plusJakartaSans.variable} font-sans min-h-screen flex flex-col bg-areia texture-paper`}>
         <AuthProvider>
           <Header />
           <main className="flex-1">

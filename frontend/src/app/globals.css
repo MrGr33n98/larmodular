@@ -19,15 +19,27 @@
   --color-areia-escuro: #E8E2D6;
   --color-creme: #FAF7F2;
   --color-argila: #8B7355;
+
+  /* Premium Claymorphism Tokens */
+  --brand-primary: #E76F51;
+  --brand-secondary: #264653;
+  --surface-base: #FCFDFD;
+  --surface-elevated: #FFFFFF;
   
   --shadow-soft: 0 4px 20px rgba(44, 36, 22, 0.08);
   --shadow-medium: 0 8px 30px rgba(44, 36, 22, 0.12);
   --shadow-elevated: 0 12px 40px rgba(44, 36, 22, 0.16);
+
+  /* Claymorphism Shadows */
+  --shadow-clay-external: 0 10px 30px rgba(0,0,0,0.03);
+  --shadow-clay-internal-1: inset 6px 6px 12px rgba(0,0,0,0.03);
+  --shadow-clay-internal-2: inset -6px -6px 12px rgba(255,255,255,0.7);
   
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-xl: 24px;
+  --radius-card: 32px;
 }
 
 @theme inline {
@@ -49,18 +61,29 @@
   --color-areia-escuro: var(--color-areia-escuro);
   --color-creme: var(--color-creme);
   --color-argila: var(--color-argila);
+
+  /* Premium Claymorphism Colors */
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-secondary: var(--brand-secondary);
+  --color-surface-base: var(--surface-base);
+  --color-surface-elevated: var(--surface-elevated);
   
   --font-serif: var(--font-serif);
   --font-sans: var(--font-sans);
+  --font-jakarta: var(--font-jakarta);
   
   --shadow-soft: var(--shadow-soft);
   --shadow-medium: var(--shadow-medium);
   --shadow-elevated: var(--shadow-elevated);
+
+  /* Claymorphism Shadows in Theme */
+  --shadow-clay-external: var(--shadow-clay-external);
   
   --radius-sm: var(--radius-sm);
   --radius-md: var(--radius-md);
   --radius-lg: var(--radius-lg);
   --radius-xl: var(--radius-xl);
+  --radius-card: var(--radius-card);
 }
 
 body {
