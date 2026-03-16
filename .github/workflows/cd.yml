@@ -224,7 +224,7 @@ jobs:
           host: ${{ secrets.EC2_HOST_PRODUCTION }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "docker-compose.prod.yml,nginx/nginx.test.conf,Dockerfile,entrypoint.sh"
+          source: "docker-compose.prod.yml,nginx/,Dockerfile,entrypoint.sh"
           target: "/home/ubuntu/larmodular/"
           overwrite: true
 
@@ -259,6 +259,9 @@ jobs:
             echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
             
             # Pull and restart containers
+            # Limpeza de pastas fantasmas do Docker
+            if [ -d nginx/nginx.test.conf ]; then rm -rf nginx/nginx.test.conf; fi
+            
             docker compose -f docker-compose.prod.yml pull
             docker compose -f docker-compose.prod.yml up -d
             
