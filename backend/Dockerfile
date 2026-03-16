@@ -22,20 +22,16 @@ WORKDIR /app
 RUN gem install rails -v 7.0.6 && \
     gem install bundler
 
-# Copy only Gemfile (not Gemfile.lock to avoid platform conflicts)
-COPY backend/Gemfile /app/Gemfile
-COPY backend/Gemfile.lock /app/Gemfile.lock
-
+# Copy Gemfile and application code from correct path
+COPY backend/backend/Gemfile /app/Gemfile
 WORKDIR /app
 
 # Install gems for Linux platform (will create new Gemfile.lock)
 bundle install --jobs 4 --retry 3
 
 # Copy application code
-COPY backend/ /app/
-COPY config/ /app/config/
-
-# Precompile assets
+COPY backend/backend/ /app/
+COPY backend/config/ /app/config/
 RUN RAILS_ENV=production SECRET_KEY_BASE=dummy_key_for_precompile \
     bundle exec rails assets:precompile
 
