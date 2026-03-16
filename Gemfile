@@ -68,8 +68,9 @@ gem 'stripe'
 # Search
 gem 'pg_search'
 
+gem 'pg'
+
 group :development, :test do
-  gem 'pg'
   gem 'rspec-rails', '~> 6.0'
   gem 'factory_bot_rails'
   gem 'shoulda-matchers'

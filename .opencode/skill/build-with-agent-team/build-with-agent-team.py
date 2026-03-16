@@ -31,8 +31,11 @@ def main(plan_path, num_agents):
         print("No tasks found in plan. Exiting.")
         return 1
 
-    # Build placeholder commands for each task
-    commands = [f"bash -lc 'echo Working on: {t}; sleep 1; echo Done: {t}'" for t in tasks]
+    import os
+    if os.name == 'nt': # Windows
+        commands = [f"cmd /c \"echo Working on: {t} && timeout /t 1 > nul && echo Done: {t}\"" for t in tasks]
+    else: # Linux/Mac
+        commands = [f"bash -lc 'echo Working on: {t}; sleep 1; echo Done: {t}'" for t in tasks]
 
     # Create a pool of workers (one per agent)
     n = max(1, int(num_agents))
