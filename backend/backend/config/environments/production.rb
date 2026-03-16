@@ -34,6 +34,10 @@ Rails.application.configure do
   config.assets.compile = true
 
   # Do not initialize the Rails application during assets:precompile.
+  # This avoids loading the DB adapter (pg) when precompiling assets in CI/CD.
+  config.assets.initialize_on_precompile = false
+
+  # Do not initialize the Rails application during assets:precompile.
   # This avoids loading the DB adapter (pg) when precompiling assets,
   # which would fail if native dependencies are not available in the build environment.
   config.assets.initialize_on_precompile = false
