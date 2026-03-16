@@ -172,25 +172,6 @@ jobs:
             # Run migrations
             docker-compose -f docker-compose.prod.yml exec -T backend bundle exec rails db:migrate || true
 
-      - name: Notify deployment
-        if: always()
-        uses: slackapi/slack-github-action@v1.25.0
-        with:
-          payload: |
-            {
-              "text": "🚀 Staging deployment ${{ job.status }}",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "🚀 Staging deployment ${{ job.status }}"
-                  }
-                }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
   # Deploy to Production
   deploy-production:
@@ -261,25 +242,6 @@ jobs:
             # Run migrations
             docker-compose -f docker-compose.prod.yml exec -T backend bundle exec rails db:migrate || true
 
-      - name: Notify deployment
-        if: always()
-        uses: slackapi/slack-github-action@v1.25.0
-        with:
-          payload: |
-            {
-              "text": "🚨 Production deployment ${{ job.status }}",
-              "blocks": [
-                {
-                  "type": "section",
-                  "text": {
-                    "type": "mrkdwn",
-                    "text": "🚨 Production deployment ${{ job.status }}"
-                  }
-                }
-              ]
-            }
-        env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
   # Post-deployment Tests
   smoke-tests:
