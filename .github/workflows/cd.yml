@@ -135,6 +135,16 @@ jobs:
           echo "backend-image=$BACKEND_IMAGE" >> $GITHUB_OUTPUT
           echo "frontend-image=$FRONTEND_IMAGE" >> $GITHUB_OUTPUT
 
+      - name: Copy files to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST_STAGING }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "docker-compose.prod.yml,nginx/nginx.test.conf"
+          target: "/home/ubuntu/larmodular/"
+          overwrite: true
+
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.0
         with:
@@ -204,6 +214,16 @@ jobs:
           FRONTEND_IMAGE=$(sed -n '2p' deployed-images.txt)
           echo "backend-image=$BACKEND_IMAGE" >> $GITHUB_OUTPUT
           echo "frontend-image=$FRONTEND_IMAGE" >> $GITHUB_OUTPUT
+
+      - name: Copy files to EC2
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST_PRODUCTION }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "docker-compose.prod.yml,nginx/nginx.test.conf"
+          target: "/home/ubuntu/larmodular/"
+          overwrite: true
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@v1.0.0
