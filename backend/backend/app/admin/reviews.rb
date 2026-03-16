@@ -34,6 +34,7 @@ ActiveAdmin.register Review do
       f.input :verified_purchase, label: 'Compra Verificada'
       f.input :company_response, label: 'Resposta da Empresa'
       f.input :company_response_text, label: 'Texto da Resposta'
+      f.input :images, label: 'Imagens (URLs JSON array)', as: :text, placeholder: '["https://exemplo.com/img1.jpg"]'
     end
     f.actions
   end

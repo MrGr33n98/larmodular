@@ -30,7 +30,7 @@ ActiveAdmin.register Product do
       f.input :description, label: 'Descrição'
       f.input :base_price, label: 'Preço Base'
       f.input :discount_price, label: 'Preço com Desconto'
-      f.input :images, label: 'Imagens', as: :text
+      f.input :images, label: 'Imagens (URLs JSON array)', as: :text, placeholder: '["https://exemplo.com/img1.jpg", "https://exemplo.com/img2.jpg"]'
       f.input :specifications, label: 'Especificações', as: :text
       f.input :highlights, label: 'Destaques', as: :text
       f.input :video_url, label: 'URL do Vídeo'
