@@ -27,8 +27,9 @@ COPY backend/Gemfile backend/Gemfile.lock /app/
 
 WORKDIR /app
 
-# Install gems - remove Gemfile.lock to force platform-specific gem resolution
+# Remove platform-specific Gemfile.lock and install ALL gems (no exclusions)
 RUN rm Gemfile.lock && \
+    bundle config set without '' && \
     bundle install --jobs 4 --retry 3
 
 # Copy application code
