@@ -1,17 +1,41 @@
-Build With Agent Team (Prototype) - Local Orchestrator
+# 🤖 Como Rodar o Agent Team (Protótipo) no LARModular
 
-Overview
-- A lightweight, local approach to simulate multi-agent collaboration for planning and prototyping work inside a repository.
-- Does not require Claude’s real Agent Teams; uses a small Python-based orchestrator to run tasks in parallel.
+Este guia explica como usar o script `build-with-agent-team.py` para orquestrar tarefas baseadas no plano mestre do projeto.
 
-Prereqs
-- Python 3.x
-- Optional: tmux for real-time visualization (not required for the prototype)
+## 📋 Pré-requisitos
+- Python 3 instalado no seu ambiente (Windows ou Linux).
 
-Usage
-- Place a plan markdown file describing the tasks.
-- Run: python3 .opencode/skill/build-with-agent-team/build-with-agent-team.py <plan.md> [num_agents]
-- The script will spawn worker processes for each task and print progress to stdout.
+## 🚀 Passo a Passo (Uso Local)
 
-Notes
-- This is a prototype. For production-grade integration with your CI/CD, you’d want to wrap this into a proper CLI, error handling, and better inter-process communication.
+### 1. Preparar o Plano
+O plano mestre já foi criado em: `plans/larmodular-master-plan.md`. Ele contém todas as fases de SEO, Back, Front e Automação.
+
+### 2. Executar a Orquestração
+Abra o terminal no diretório raiz do projeto e execute o seguinte comando:
+
+```bash
+python .opencode/skill/build-with-agent-team/build-with-agent-team.py plans/larmodular-master-plan.md 3
+```
+*O número `3` no final indica que você quer simular **3 agentes** trabalhando em paralelo.*
+
+## 🛠️ O que acontece por baixo dos panos?
+- O script lê cada item marcado com `- ` no seu arquivo `.md`.
+- Ele distribui essas tarefas entre os "Agentes" (processos paralelos).
+- No protótipo atual, ele simula a execução com logs detalhados.
+
+---
+
+# 🛸 Opção B: Agent Teams Real (Claude Code)
+
+Se você estiver usando o **Claude Code** no terminal e tiver o `tmux` instalado, você pode usar a funcionalidade nativa de Agent Teams:
+
+1. **Configurar o Ambiente:**
+   ```bash
+   export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
+   ```
+
+2. **Chamar o Time:**
+   No chat do Claude, use:
+   > /build-with-agent-team plans/larmodular-master-plan.md
+
+Isso abrirá múltiplos panes no seu tmux e cada agente assumirá uma "persona" (@analyst, @dev, @architect) baseada nas skills que definimos.

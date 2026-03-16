@@ -32,15 +32,29 @@ def main(plan_path, num_agents):
         return 1
 
     import os
-    if os.name == 'nt': # Windows
-        commands = [f"cmd /c \"echo Working on: {t} && timeout /t 1 > nul && echo Done: {t}\"" for t in tasks]
-    else: # Linux/Mac
-        commands = [f"bash -lc 'echo Working on: {t}; sleep 1; echo Done: {t}'" for t in tasks]
+    import re
+
+    # Create worker arguments by matching tasks to agents
+    worker_args = []
+    for i, t in enumerate(tasks):
+        # Procura por @agente no texto da tarefa
+        match = re.search(r'@([\w-]+)', t)
+        agent_display = match.group(1) if match else f"agent-{i+1}"
+        
+        if os.name == 'nt':
+            cmd = f"python -c \"import time; print('Working on: {t}'); time.sleep(2); print('Done: {t}')\""
+        else:
+            cmd = f"bash -lc 'echo Working on: {t}; sleep 2; echo Done: {t}'"
+        
+        worker_args.append((agent_display, cmd))
 
     # Create a pool of workers (one per agent)
     n = max(1, int(num_agents))
     pool = mp.Pool(processes=n)
-    results = [pool.apply_async(worker, args=(f"agent-{i+1}", commands[i])) for i in range(min(n, len(commands)))]
+    
+    # Processa as tarefas disponíveis respeitando o limite de agentes (n)
+    results = [pool.apply_async(worker, args=worker_args[i]) for i in range(min(n, len(worker_args)))]
+    
     pool.close()
     pool.join()
     return all(r.get() == 0 for r in results)
