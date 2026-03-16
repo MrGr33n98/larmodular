@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { api } from '@/lib/api';
@@ -9,15 +9,19 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { formatPrice } from '@/lib/utils';
+import { Pagination, LoadMore } from '@/components/ui/pagination';
 import { Search, Filter, Star, Package, Grid, List } from 'lucide-react';
 
-export default function SearchPage() {
+function SearchContent() {
   const searchParams = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  
+  const currentPage = parseInt(searchParams.get('page') || '1', 10);
+  const perPage = 12;
   
   const [filters, setFilters] = useState({
     q: searchParams.get('q') || '',
@@ -26,6 +30,12 @@ export default function SearchPage() {
     destaque: searchParams.get('destaque') === 'true',
     precoMin: '',
     precoMax: '',
+  });
+
+  const [pagination, setPagination] = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalCount: 0,
   });
 
   useEffect(() => {
@@ -45,19 +55,27 @@ export default function SearchPage() {
       setLoading(true);
       try {
         const params = new URLSearchParams();
+        params.append('page', currentPage.toString());
+        params.append('per_page', perPage.toString());
         if (filters.q) params.append('search', filters.q);
         if (filters.categoria) params.append('category_id', filters.categoria);
         if (filters.destaque) params.append('featured', 'true');
         if (filters.precoMin) params.append('price_min', filters.precoMin);
         if (filters.precoMax) params.append('price_max', filters.precoMax);
 
-        const [productsRes, companiesRes] = await Promise.all([
-          api.get<{ data: Product[] }>(`/products?${params.toString()}`),
-          api.get<{ data: Company[] }>(`/companies?${params.toString()}`),
+        const [productsRes] = await Promise.all([
+          api.get<{ data: Product[]; meta?: any }>(`/products?${params.toString()}`),
         ]);
 
         setProducts(productsRes.data.data || []);
-        setCompanies(companiesRes.data.data || []);
+        
+        if (productsRes.data.meta?.pagination) {
+          setPagination({
+            currentPage: productsRes.data.meta.pagination.current_page || currentPage,
+            totalPages: productsRes.data.meta.pagination.total_pages || 1,
+            totalCount: productsRes.data.meta.pagination.total_count || 0,
+          });
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
       } finally {
@@ -66,15 +84,30 @@ export default function SearchPage() {
     };
 
     fetchData();
-  }, [filters]);
+  }, [filters, currentPage]);
 
   const handleFilterChange = (key: string, value: string | boolean) => {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 
+  const handleLoadMore = async () => {
+    const nextPage = currentPage + 1;
+    const params = new URLSearchParams();
+    params.append('page', nextPage.toString());
+    params.append('per_page', perPage.toString());
+    if (filters.q) params.append('search', filters.q);
+    if (filters.categoria) params.append('category_id', filters.categoria);
+
+    try {
+      const res = await api.get<{ data: Product[] }>(`/products?${params.toString()}`);
+      setProducts(prev => [...prev, ...(res.data.data || [])]);
+    } catch (error) {
+      console.error('Error loading more:', error);
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Search Header */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-8">
         <div className="flex flex-col md:flex-row gap-4">
           <div className="flex-1">
@@ -107,7 +140,6 @@ export default function SearchPage() {
           </div>
         </div>
 
-        {/* Quick Filters */}
         <div className="flex flex-wrap gap-2 mt-4">
           <button
             onClick={() => handleFilterChange('destaque', !filters.destaque)}
@@ -123,7 +155,6 @@ export default function SearchPage() {
       </div>
 
       <div className="flex gap-8">
-        {/* Sidebar Filters */}
         <div className="w-64 flex-shrink-0 hidden lg:block">
           <Card>
             <CardContent className="p-4">
@@ -162,12 +193,10 @@ export default function SearchPage() {
           </Card>
         </div>
 
-        {/* Results */}
         <div className="flex-1">
-          {/* Results Header */}
           <div className="flex items-center justify-between mb-6">
             <p className="text-gray-600">
-              {loading ? 'Carregando...' : `${products.length} produtos encontrados`}
+              {loading ? 'Carregando...' : `${pagination.totalCount} produtos encontrados`}
             </p>
             <div className="flex items-center gap-2">
               <button
@@ -185,7 +214,6 @@ export default function SearchPage() {
             </div>
           </div>
 
-          {/* Products Grid */}
           {loading ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {Array.from({ length: 9 }).map((_, i) => (
@@ -193,42 +221,49 @@ export default function SearchPage() {
               ))}
             </div>
           ) : products.length > 0 ? (
-            <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
-              {products.map((product) => (
-                <Link key={product.id} href={`/produto/${product.slug}`}>
-                  <Card className="hover:shadow-lg transition-shadow overflow-hidden">
-                    <div className={`${viewMode === 'grid' ? 'aspect-video' : 'flex'} bg-gray-200 relative`}>
-                      {product.images?.[0] ? (
-                        <img src={product.images[0]} alt={product.name} className="object-cover w-full h-full" />
-                      ) : (
-                        <div className="flex items-center justify-center h-full">
-                          <Package className="w-12 h-12 text-gray-400" />
-                        </div>
-                      )}
-                      {product.featured && (
-                        <span className="absolute top-2 left-2 bg-emerald-600 text-white text-xs px-2 py-1 rounded">
-                          Destaque
-                        </span>
-                      )}
-                    </div>
-                    <CardContent className="p-4">
-                      <p className="text-sm text-gray-500 mb-1">{product.category_name}</p>
-                      <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{product.name}</h3>
-                      <p className="text-sm text-gray-500 mb-2">{product.company_name}</p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-lg font-bold text-emerald-600">{formatPrice(product.base_price)}</span>
-                        {product.average_rating && (
-                          <div className="flex items-center text-sm text-gray-500">
-                            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400 mr-1" />
-                            {product.average_rating}
+            <>
+              <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
+                {products.map((product) => (
+                  <Link key={product.id} href={`/produto/${product.slug}`}>
+                    <Card className="hover:shadow-lg transition-shadow overflow-hidden">
+                      <div className={`${viewMode === 'grid' ? 'aspect-video' : 'flex'} bg-gray-200 relative`}>
+                        {product.images?.[0] ? (
+                          <img src={product.images[0]} alt={product.name} className="object-cover w-full h-full" />
+                        ) : (
+                          <div className="flex items-center justify-center h-full w-full">
+                            <Package className="w-12 h-12 text-gray-400" />
                           </div>
                         )}
+                        {product.featured && (
+                          <span className="absolute top-2 left-2 bg-emerald-600 text-white text-xs px-2 py-1 rounded">
+                            Destaque
+                          </span>
+                        )}
                       </div>
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
-            </div>
+                      <CardContent className="p-4">
+                        <p className="text-sm text-gray-500 mb-1">{product.category_name}</p>
+                        <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{product.name}</h3>
+                        <p className="text-sm text-gray-500 mb-2">{product.company_name}</p>
+                        <div className="flex items-center justify-between">
+                          <span className="text-lg font-bold text-emerald-600">{formatPrice(product.base_price)}</span>
+                          {product.average_rating && (
+                            <div className="flex items-center text-sm text-gray-500">
+                              <Star className="w-4 h-4 text-yellow-400 fill-yellow-400 mr-1" />
+                              {product.average_rating}
+                            </div>
+                          )}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </Link>
+                ))}
+              </div>
+
+              <Pagination
+                currentPage={pagination.currentPage}
+                totalPages={pagination.totalPages}
+              />
+            </>
           ) : (
             <div className="text-center py-12">
               <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -239,5 +274,21 @@ export default function SearchPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 9 }).map((_, i) => (
+            <div key={i} className="bg-gray-200 rounded-xl h-80 animate-pulse" />
+          ))}
+        </div>
+      </div>
+    }>
+      <SearchContent />
+    </Suspense>
   );
 }

@@ -4,15 +4,16 @@ module Api
       before_action :authenticate_user!, except: [:index, :show]
       
       def index
-        companies = Company.active
-          .includes(:region, :city, :category)
-          .by_category(params[:category_id])
-          .by_region(params[:region_id])
-          .featured(params[:featured] == 'true')
-          .order(created_at: :desc)
+        cache_key = "companies:index:#{params.slice(:category_id, :region_id, :featured, :search, :page, :per_page).values.join(':')}"
         
-        if params[:search].present?
-          companies = companies.where("name ILIKE ?", "%#{params[:search]}%")
+        companies = Rails.cache.fetch(cache_key, expires_in: 5.minutes) do
+          Company.active
+            .includes(:region, :city)
+            .by_category(params[:category_id])
+            .by_region(params[:region_id])
+            .featured(params[:featured] == 'true')
+            .order(featured: :desc, views_count: :desc)
+            .to_a
         end
         
         companies = companies.page(params[:page]).per(params[:per_page] || 20)
@@ -26,6 +27,7 @@ module Api
       
       def show
         company = Company.friendly_find(params[:id])
+        return render_not_found unless company
         company.increment!(:views_count)
         
         render_success(CompanySerializer.new(company).as_json)

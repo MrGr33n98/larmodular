@@ -32,14 +32,16 @@ module Api
       def show
         product = Product.friendly_find(params[:id])
         return render_not_found('Produto não encontrado') unless product
-        product.increment!(:views_count)
+        
+        Rails.cache.fetch("products:#{product.id}", expires_in: 10.minutes) do
+          product.increment!(:views_count) unless product.views_count > 1000
+        end
         
         render_success(ProductSerializer.new(product).as_json)
       end
       
       def categories
-        categories = Category.roots.active.by_position
-        
+        categories = CacheService.categories
         render_success(
           CategorySerializer.new(categories).as_json
         )
@@ -57,7 +59,7 @@ module Api
       def reviews
         product = Product.friendly_find(params[:id])
         reviews = product.reviews.approved
-          .order(created_at: :desc)
+          .order(created_at: :Desc)
           .page(params[:page])
           .per(params[:per_page] || 10)
         
@@ -70,10 +72,13 @@ module Api
       
       def related
         product = Product.friendly_find(params[:id])
-        related = Product.active
-          .where(category_id: product.category_id)
-          .where.not(id: product.id)
-          .limit(10)
+        related = Rails.cache.fetch("products:#{product.id}:related", expires_in: 30.minutes) do
+          Product.active
+            .where(category_id: product.category_id)
+            .where.not(id: product.id)
+            .limit(10)
+            .to_a
+        end
         
         render_success(ProductSerializer.new(related).as_json)
       end

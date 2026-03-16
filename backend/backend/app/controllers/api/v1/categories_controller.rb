@@ -2,11 +2,13 @@ module Api
   module V1
     class CategoriesController < BaseController
       def index
-        if params[:parent_id].present?
-          category = Category.friendly_find(params[:parent_id])
-          categories = category&.children&.active&.ordered || []
-        else
-          categories = Category.active.roots.ordered
+        categories = CacheService.fetch("categories:index:#{params[:parent_id]}") do
+          if params[:parent_id].present?
+            category = Category.friendly_find(params[:parent_id])
+            category&.children&.active&.ordered || []
+          else
+            Category.active.roots.ordered.to_a
+          end
         end
         render_success(serialize(categories))
       end

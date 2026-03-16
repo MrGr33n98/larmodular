@@ -2,7 +2,9 @@ module Api
   module V1
     class RegionsController < BaseController
       def index
-        regions = Region.active.order(name: :asc)
+        regions = CacheService.fetch('regions:index') do
+          Region.active.order(name: :asc).to_a
+        end
         render_success(regions.map { |r| RegionSerializer.new(r).as_json })
       end
 
