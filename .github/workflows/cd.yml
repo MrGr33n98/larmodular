@@ -16,6 +16,10 @@ on:
           - staging
           - production
 
+permissions:
+  contents: read
+  packages: write
+
 env:
   RUBY_VERSION: '3.2.2'
   NODE_VERSION: '20'
