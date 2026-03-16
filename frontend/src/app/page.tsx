@@ -5,9 +5,19 @@ import Link from 'next/link';
 import { api } from '@/lib/api';
 import { Product, Category, Company, Region } from '@/types';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { formatPrice } from '@/lib/utils';
-import { ArrowRight, Search, Home, Package, Star, MapPin } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { ProductCard } from '@/components/marketplace/ProductCard';
+import { motion } from 'framer-motion';
+import { 
+  ArrowRight, 
+  Search, 
+  Home, 
+  MapPin, 
+  ShieldCheck, 
+  Zap, 
+  LayoutGrid,
+  Users
+} from 'lucide-react';
 
 export default function HomePage() {
   const [featuredProducts, setFeaturedProducts] = useState<Product[]>([]);
@@ -41,72 +51,108 @@ export default function HomePage() {
   }, []);
 
   return (
-    <div>
+    <div className="mesh-gradient min-h-screen">
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-floresta via-floresta-dark to-floresta text-white py-24 overflow-hidden">
-        <div className="absolute inset-0 opacity-10 texture-linen" />
-        <div className="absolute top-0 right-0 w-96 h-96 bg-terracota/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-horizonte/20 rounded-full blur-3xl" />
-        
-        <div className="container mx-auto px-4 relative z-10">
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6 font-serif">
-              Encontre sua Casa Modular dos Sonhos
-            </h1>
-            <p className="text-xl text-white/80 mb-10 max-w-2xl mx-auto">
-              O maior marketplace brasileiro de Tiny Houses, Containers e Construções Modulares
-            </p>
+      <section className="relative pt-32 pb-20 overflow-hidden">
+        <div className="container mx-auto px-6 relative z-10">
+          <div className="max-w-4xl mx-auto text-center space-y-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+            >
+              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-primary/10 text-brand-primary text-xs font-bold uppercase tracking-widest mb-6">
+                <ShieldCheck className="w-4 h-4" />
+                O Maior Marketplace Modular do Brasil
+              </span>
+              <h1 className="text-5xl md:text-7xl font-jakarta font-extrabold text-brand-secondary tracking-tighter leading-[0.95] mb-6">
+                Sua casa modular, <br />
+                <span className="text-brand-primary">simples e tátil.</span>
+              </h1>
+              <p className="text-xl text-brand-secondary/60 font-medium max-w-2xl mx-auto">
+                Descubra a liberdade das Tiny Houses e construções modulares com segurança e design premium.
+              </p>
+            </motion.div>
             
-            <div className="bg-white/95 backdrop-blur rounded-xl p-2 shadow-elevated flex flex-col md:flex-row gap-2 max-w-2xl mx-auto">
-              <div className="flex-1">
-                <input
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="bg-white/40 backdrop-blur-xl rounded-[40px] p-3 shadow-clay-external border border-white/40 flex flex-col md:flex-row gap-3 max-w-3xl mx-auto"
+            >
+              <div className="flex-[2]">
+                <Input
                   type="text"
-                  placeholder="O que você procura?"
-                  className="w-full px-4 py-3.5 rounded-lg text-gray-900 border-0 focus:ring-2 focus:ring-terracota bg-creme"
+                  placeholder="Onde você quer morar?"
+                  className="h-14 bg-white/60"
                 />
               </div>
               <div className="flex-1">
-                <select className="w-full px-4 py-3.5 rounded-lg text-gray-900 border-0 focus:ring-2 focus:ring-terracota bg-creme">
-                  <option value="">Todas as categorias</option>
+                <select className="w-full h-14 px-4 rounded-2xl bg-white/60 border-none text-brand-secondary font-bold text-sm focus:ring-2 focus:ring-brand-primary/20 appearance-none shadow-[inset_2px_2px_4px_rgba(0,0,0,0.05)]">
+                  <option value="">Tipo de Obra</option>
                   {categories.map((cat) => (
-                    <option key={cat.id} value={cat.slug}>
-                      {cat.name}
-                    </option>
+                    <option key={cat.id} value={cat.slug}>{cat.name}</option>
                   ))}
                 </select>
               </div>
-              <Link href="/busca">
-                <Button size="lg" className="w-full md:w-auto">
-                  <Search className="w-5 h-5 mr-2" />
-                  Buscar
-                </Button>
-              </Link>
-            </div>
+              <Button size="lg" className="h-14 rounded-2xl md:px-8">
+                <Search className="w-5 h-5 mr-2" />
+                Explorar
+              </Button>
+            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* Categories Section */}
+      {/* Stats / Features Grid */}
+      <section className="py-10">
+        <div className="container mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { icon: Zap, title: "Rapidez", desc: "Entrega em tempo recorde" },
+              { icon: ShieldCheck, title: "Segurança", desc: "Fabricantes homologados" },
+              { icon: LayoutGrid, title: "Variedade", desc: "Centenas de modelos" }
+            ].map((feature, i) => (
+              <div key={i} className="clay-card p-6 flex items-center gap-4 group hover:-translate-y-1 transition-premium">
+                <div className="w-12 h-12 rounded-2xl bg-brand-primary/10 flex items-center justify-center text-brand-primary group-hover:scale-110 transition-premium">
+                  <feature.icon className="w-6 h-6" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-brand-secondary">{feature.title}</h3>
+                  <p className="text-sm text-brand-secondary/50 font-medium">{feature.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Categories Horizontal Scroll */}
       <section className="py-20">
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-6">
           <div className="flex items-center justify-between mb-10">
-            <h2 className="text-3xl font-bold text-foreground font-serif">Categorias</h2>
-            <Link href="/categorias" className="text-terracota hover:text-terracota-dark flex items-center font-medium">
-              Ver todas <ArrowRight className="w-4 h-4 ml-1" />
+            <div>
+              <h2 className="text-3xl font-jakarta font-extrabold text-brand-secondary tracking-tight">
+                Categorias
+              </h2>
+              <p className="text-brand-secondary/50 font-medium">Encontre o estilo perfeito para você</p>
+            </div>
+            <Link href="/categorias">
+              <Button variant="clay" size="sm" className="rounded-xl">
+                Ver Todas <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
             </Link>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-            {categories.slice(0, 8).map((category) => (
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-5">
+            {categories.slice(0, 6).map((category) => (
               <Link key={category.id} href={`/busca?categoria=${category.slug}`}>
-                <Card className="hover:shadow-lg transition-all hover:-translate-y-1 cursor-pointer organic-shadow-hover border-0">
-                  <CardContent className="p-6 text-center">
-                    <div className="w-14 h-14 bg-terracota/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Home className="w-7 h-7 text-terracota" />
-                    </div>
-                    <h3 className="font-semibold text-foreground">{category.name}</h3>
-                  </CardContent>
-                </Card>
+                <div className="clay-card p-6 text-center group cursor-pointer hover:bg-brand-primary/5 transition-premium">
+                  <div className="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center mx-auto mb-4 group-hover:scale-110 group-hover:rotate-3 transition-premium">
+                    <Home className="w-8 h-8 text-brand-primary" />
+                  </div>
+                  <h3 className="font-bold text-brand-secondary text-sm group-hover:text-brand-primary transition-premium">{category.name}</h3>
+                </div>
               </Link>
             ))}
           </div>
@@ -114,140 +160,109 @@ export default function HomePage() {
       </section>
 
       {/* Featured Products */}
-      <section className="py-20 bg-areia-escuro/50 texture-paper">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-10">
-            <h2 className="text-3xl font-bold text-foreground font-serif">Produtos em Destaque</h2>
-            <Link href="/busca?destaque=true" className="text-terracota hover:text-terracota-dark flex items-center font-medium">
-              Ver todos <ArrowRight className="w-4 h-4 ml-1" />
-            </Link>
+      <section className="py-20 relative">
+        <div className="container mx-auto px-6">
+          <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+            <div className="space-y-2">
+              <span className="text-brand-primary font-bold text-xs uppercase tracking-widest">Vitrine Premium</span>
+              <h2 className="text-4xl font-jakarta font-extrabold text-brand-secondary tracking-tight leading-none">
+                Módulos em Destaque
+              </h2>
+            </div>
+            <div className="flex gap-3">
+              <Link href="/busca">
+                <Button variant="clay" className="rounded-2xl">Mais Populares</Button>
+              </Link>
+              <Link href="/busca">
+                <Button className="rounded-2xl">Ver Todos</Button>
+              </Link>
+            </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {loading ? (
-              Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className="bg-areia-escuro rounded-xl h-80 animate-pulse" />
+              Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="clay-card aspect-[4/5] animate-pulse bg-white/50" />
               ))
             ) : (
               featuredProducts.map((product) => (
-                <Link key={product.id} href={`/produto/${product.slug}`}>
-                  <Card className="hover:shadow-xl transition-all hover:-translate-y-1 overflow-hidden organic-shadow-hover border-0">
-                    <div className="aspect-video bg-areia-escuro relative">
-                      {product.images?.[0] ? (
-                        <img src={product.images[0]} alt={product.name} className="object-cover w-full h-full" />
-                      ) : (
-                        <div className="flex items-center justify-center h-full">
-                          <Package className="w-12 h-12 text-argila/40" />
-                        </div>
-                      )}
-                      {product.featured && (
-                        <span className="absolute top-3 left-3 bg-terracota text-white text-xs px-3 py-1.5 rounded-full font-medium">
-                          Destaque
-                        </span>
-                      )}
-                    </div>
-                    <CardContent className="p-5">
-                      <p className="text-sm text-foreground-muted mb-1.5">{product.category_name}</p>
-                      <h3 className="font-semibold text-foreground mb-2 line-clamp-2 leading-snug">{product.name}</h3>
-                      <p className="text-sm text-foreground-muted mb-3">{product.company_name}</p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xl font-bold text-terracota">{formatPrice(product.base_price)}</span>
-                        {product.average_rating && (
-                          <div className="flex items-center text-sm text-foreground-muted">
-                            <Star className="w-4 h-4 text-yellow-500 fill-yellow-500 mr-1" />
-                            {product.average_rating}
-                          </div>
-                        )}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </Link>
+                <ProductCard
+                  key={product.id}
+                  id={product.id}
+                  name={product.name}
+                  price={product.base_price || 0}
+                  location={product.company_name || 'Brasil'}
+                  area={product.specs?.area || 30}
+                  bedrooms={product.specs?.bedrooms || 1}
+                  imageUrl={product.images?.[0] || 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&q=80'}
+                  isVerified={product.featured}
+                />
               ))
             )}
           </div>
         </div>
       </section>
 
-      {/* Regions Section */}
-      <section className="py-20">
-        <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-foreground font-serif mb-10 text-center">Encontre por Região</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {regions.map((region) => (
-              <Link key={region.id} href={`/busca?regiao=${region.slug}`}>
-                <Card className="hover:shadow-md transition-all hover:-translate-y-1 cursor-pointer organic-shadow border-0">
-                  <CardContent className="p-4 flex items-center space-x-3">
-                    <MapPin className="w-5 h-5 text-floresta" />
-                    <span className="font-medium text-foreground">{region.name}</span>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
+      {/* Companies Section */}
+      <section className="py-20 bg-white/20 backdrop-blur-sm rounded-[60px] mx-6">
+        <div className="container mx-auto px-10">
+          <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
+            <h2 className="text-4xl font-jakarta font-extrabold text-brand-secondary">Fabricantes Parceiros</h2>
+            <p className="text-brand-secondary/60 font-medium">As melhores construtoras modulares do país reunidas em um só lugar.</p>
           </div>
-        </div>
-      </section>
-
-      {/* Featured Companies */}
-      <section className="py-20 bg-areia-escuro/50 texture-paper">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between mb-10">
-            <h2 className="text-3xl font-bold text-foreground font-serif">Empresas Parceiras</h2>
-            <Link href="/empresas" className="text-terracota hover:text-terracota-dark flex items-center font-medium">
-              Ver todas <ArrowRight className="w-4 h-4 ml-1" />
-            </Link>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {featuredCompanies.map((company) => (
               <Link key={company.id} href={`/empresa/${company.slug}`}>
-                <Card className="hover:shadow-xl transition-all hover:-translate-y-1 organic-shadow-hover border-0">
-                  <CardContent className="p-6">
-                    <div className="flex items-start space-x-4">
-                      <div className="w-16 h-16 bg-areia-escuro rounded-lg flex items-center justify-center">
-                        {company.logo_url ? (
-                          <img src={company.logo_url} alt={company.name} className="w-full h-full object-cover rounded-lg" />
-                        ) : (
-                          <Home className="w-8 h-8 text-argila/40" />
-                        )}
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-foreground flex items-center">
-                          {company.name}
-                          {company.verified && <span className="ml-1.5 text-floresta text-sm">✓</span>}
-                        </h3>
-                        {company.city_name && <p className="text-sm text-foreground-muted">{company.city_name}</p>}
-                        {company.average_rating && (
-                          <div className="flex items-center mt-1">
-                            <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                            <span className="text-sm text-foreground-muted ml-1">{company.average_rating} ({company.reviews_count} avaliações)</span>
-                          </div>
-                        )}
-                      </div>
+                <div className="clay-card p-8 flex items-center gap-6 group hover:bg-white transition-premium">
+                  <div className="w-20 h-20 bg-surface-base rounded-[24px] flex items-center justify-center shadow-inner overflow-hidden border border-white/40">
+                    {company.logo_url ? (
+                      <img src={company.logo_url} alt={company.name} className="w-full h-full object-cover p-2" />
+                    ) : (
+                      <Users className="w-10 h-10 text-brand-primary/20" />
+                    )}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <h3 className="font-extrabold text-brand-secondary group-hover:text-brand-primary transition-premium">{company.name}</h3>
+                      {company.verified && <ShieldCheck className="w-4 h-4 text-brand-primary" />}
                     </div>
-                  </CardContent>
-                </Card>
+                    <div className="flex items-center gap-1 text-xs text-brand-secondary/40 font-bold uppercase tracking-wider">
+                      <MapPin className="w-3 h-3" />
+                      {company.city_name || 'Brasil'}
+                    </div>
+                  </div>
+                </div>
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-20 bg-gradient-to-br from-terracota to-terracota-dark text-white relative overflow-hidden">
-        <div className="absolute inset-0 opacity-10 texture-linen" />
-        <div className="absolute top-0 right-0 w-80 h-80 bg-floresta/30 rounded-full blur-3xl" />
-        
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <h2 className="text-3xl md:text-4xl font-bold mb-5 font-serif">É uma empresa do setor?</h2>
-          <p className="text-xl text-white/85 mb-10 max-w-2xl mx-auto">
-            Cadastre sua empresa no maior marketplace de construções modulares do Brasil.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/cadastro-empresa">
-              <Button size="lg" className="bg-floresta hover:bg-floresta-dark text-white">Cadastrar Empresa</Button>
-            </Link>
-            <Link href="/planos">
-              <Button size="lg" variant="outline" className="border-white/40 text-white hover:bg-white/10">Ver Planos</Button>
-            </Link>
+      {/* CTA Final */}
+      <section className="py-32">
+        <div className="container mx-auto px-6">
+          <div className="relative clay-card bg-brand-secondary p-12 md:p-20 overflow-hidden text-center">
+            <div className="absolute top-0 right-0 w-96 h-96 bg-brand-primary/20 rounded-full blur-[120px]" />
+            <div className="absolute bottom-0 left-0 w-64 h-64 bg-brand-primary/10 rounded-full blur-[80px]" />
+            
+            <div className="relative z-10 max-w-3xl mx-auto space-y-8">
+              <h2 className="text-4xl md:text-6xl font-jakarta font-extrabold text-white tracking-tighter leading-tight">
+                Pronto para <br />
+                <span className="text-brand-primary">viver o futuro?</span>
+              </h2>
+              <p className="text-xl text-white/60 font-medium">
+                Seja você um comprador ou fabricante, o LARModular é o seu lugar.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button size="lg" className="rounded-2xl text-lg h-16 px-12">
+                  Criar Minha Conta
+                </Button>
+                <Button variant="clay" size="lg" className="rounded-2xl text-lg h-16 px-12 bg-white/10 text-white border-white/20">
+                  Falar com Consultor
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
       </section>

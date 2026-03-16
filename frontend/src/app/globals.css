@@ -87,15 +87,63 @@
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: var(--font-sans), system-ui, sans-serif;
+  background: var(--surface-base);
+  color: var(--brand-secondary);
+  font-family: var(--font-jakarta), var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-serif), Georgia, serif;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-family: var(--font-jakarta);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--brand-secondary);
+}
+
+.mesh-gradient {
+  background-color: var(--surface-base);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(231, 111, 81, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 0%, rgba(38, 70, 83, 0.05) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(231, 111, 81, 0.05) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(38, 70, 83, 0.05) 0px, transparent 50%);
+}
+
+.clay-card {
+  background: var(--surface-elevated);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-clay-external);
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.clay-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: var(--shadow-clay-internal-1);
+  pointer-events: none;
+}
+
+.clay-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: var(--shadow-clay-internal-2);
+  pointer-events: none;
+}
+
+.clay-button {
+  box-shadow: 
+    0 4px 12px rgba(231, 111, 81, 0.2),
+    inset 2px 2px 4px rgba(255, 255, 255, 0.3),
+    inset -2px -2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.transition-premium {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .texture-paper {
