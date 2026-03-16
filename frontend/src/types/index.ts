@@ -52,6 +52,9 @@ export interface Company {
   average_rating?: number;
   products?: Product[];
   categories?: Category[];
+  meta_title?: string;
+  meta_description?: string;
+  meta_keywords?: string;
 }
 
 export interface Product {
@@ -78,6 +81,9 @@ export interface Product {
   reviews_count?: number;
   views_count?: number;
   favorites_count?: number;
+  meta_title?: string;
+  meta_description?: string;
+  meta_keywords?: string;
 }
 
 export interface Review {
