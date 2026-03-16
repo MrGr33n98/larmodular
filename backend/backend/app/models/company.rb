@@ -32,7 +32,20 @@ class Company < ApplicationRecord
     find_by(slug: param) || find_by(id: param)
   end
 
+  def self.ransackable_attributes(auth_object = nil)
+    ["active", "created_at", "featured", "id", "meta_description", "meta_keywords", 
+     "meta_title", "name", "slug", "status", "updated_at", "verified", "views_count"]
+  end
+
   def self.ransackable_associations(auth_object = nil)
     ["categories", "city", "leads", "products", "quotes_requests", "region", "reviews", "user"]
+  end
+
+  def meta_title
+    read_attribute(:meta_title).presence || "#{name} | LARModular"
+  end
+
+  def meta_description
+    read_attribute(:meta_description).presence || description&.truncate(160, separator: ' ')
   end
 end

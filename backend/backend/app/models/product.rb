@@ -38,7 +38,21 @@ class Product < ApplicationRecord
     find_by(slug: param) || find_by(id: param)
   end
 
+  def self.ransackable_attributes(auth_object = nil)
+    ["active", "area_m2", "base_price", "bathrooms", "bedrooms", "created_at", 
+     "featured", "id", "meta_description", "meta_keywords", "meta_title", "name", 
+     "slug", "updated_at", "views_count"]
+  end
+
   def self.ransackable_associations(auth_object = nil)
     ["category", "city", "company", "favorites", "product_affinities", "product_views", "quote_requests", "region", "reviews"]
+  end
+
+  def meta_title
+    read_attribute(:meta_title).presence || "#{name} - #{category&.name} | LARModular"
+  end
+
+  def meta_description
+    read_attribute(:meta_description).presence || description&.truncate(160, separator: ' ')
   end
 end

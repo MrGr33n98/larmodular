@@ -1,7 +1,8 @@
 class ProductSerializer < ActiveModel::Serializer
   attributes :id, :name, :slug, :description, :base_price, :price_with_discount, :images,
              :specifications, :highlights, :video_url, :active, :featured, :category_id,
-             :company_id, :region_id, :city_id, :views_count, :favorites_count
+             :company_id, :region_id, :city_id, :views_count, :favorites_count,
+             :meta_title, :meta_description, :meta_keywords
 
   attribute :category_name do
     object.category.name if object.category
@@ -24,6 +25,6 @@ class ProductSerializer < ActiveModel::Serializer
   end
 
   attribute :reviews_count do
-    object.reviews.approved.count
+    object.reviews_count || 0
   end
 end

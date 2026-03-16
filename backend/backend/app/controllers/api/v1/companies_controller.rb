@@ -65,7 +65,8 @@ module Api
           :name, :description, :logo_url, :banner_url,
           :address, :phone, :email, :website,
           :social_media, :region_id, :city_id,
-          :delivery_areas, :featured, :active
+          :delivery_areas, :featured, :active,
+          :meta_title, :meta_description, :meta_keywords
         )
       end
     end

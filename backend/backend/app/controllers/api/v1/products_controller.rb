@@ -87,7 +87,8 @@ module Api
           :specs, :images, :video_url,
           :warranty_months, :lead_time_days,
           :area_m2, :bedrooms, :bathrooms,
-          :featured, :active
+          :featured, :active,
+          :meta_title, :meta_description, :meta_keywords
         )
       end
     end

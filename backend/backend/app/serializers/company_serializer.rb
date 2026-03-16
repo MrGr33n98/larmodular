@@ -1,7 +1,8 @@
 class CompanySerializer < ActiveModel::Serializer
   attributes :id, :name, :slug, :description, :logo_url, :cover_url, :website, :phone, :email, 
              :address, :zip_code, :status, :verified, :featured, :region_id, :city_id,
-             :products_count, :reviews_count, :average_rating
+             :products_count, :reviews_count, :average_rating,
+             :meta_title, :meta_description, :meta_keywords
 
   attribute :region_name do
     object.region.name if object.region
