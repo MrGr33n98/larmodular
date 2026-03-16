@@ -33,6 +33,11 @@ Rails.application.configure do
   # Fallback to assets pipeline if a precompiled asset is missed.
   config.assets.compile = true
 
+  # Do not initialize the Rails application during assets:precompile.
+  # This avoids loading the DB adapter (pg) when precompiling assets,
+  # which would fail if native dependencies are not available in the build environment.
+  config.assets.initialize_on_precompile = false
+
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
 
