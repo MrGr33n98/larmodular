@@ -26,6 +26,11 @@ RUN bundle config set --local deployment 'false' && \
 # Copy application code
 COPY . /app/
 
+# Copy entrypoint script and fix permissions
+COPY entrypoint.sh /usr/bin/
+RUN chmod +x /usr/bin/entrypoint.sh && \
+    sed -i 's/\r$//' /usr/bin/entrypoint.sh
+
 # Fix CRLF in bin/ files and ensure asset directories exist
 RUN mkdir -p app/assets/images app/assets/stylesheets vendor/javascript app/javascript && \
     sed -i 's/\r$//' bin/* || true
@@ -42,9 +47,7 @@ USER rails
 # Expose port
 EXPOSE 3000
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-  CMD curl -f http://localhost:3000/health || exit 1
+ENTRYPOINT ["entrypoint.sh"]
 
 # Start server
 CMD ["bundle", "exec", "rails", "server", "-b", "0.0.0.0"]
