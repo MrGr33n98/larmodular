@@ -29,6 +29,10 @@ RUN bundle config set --local deployment 'false' && \
 COPY backend/ /app/
 COPY config/ /app/config/
 
+# Precompile assets
+RUN RAILS_ENV=production SECRET_KEY_BASE=assets_precompile_bundle_key \
+    bundle exec rails assets:precompile
+
 # Create non-root user
 RUN useradd -m -s /bin/bash rails && \
     chown -R rails:rails /app
