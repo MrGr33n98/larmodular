@@ -22,15 +22,13 @@ WORKDIR /app
 RUN gem install rails -v 7.0.6 && \
     gem install bundler
 
-# Copy Gemfile and install dependencies
-COPY backend/Gemfile backend/Gemfile.lock /app/
+# Copy only Gemfile (not Gemfile.lock to avoid platform conflicts)
+COPY backend/Gemfile /app/Gemfile
 
 WORKDIR /app
 
-# Remove platform-specific Gemfile.lock and install ALL gems (no exclusions)
-RUN rm Gemfile.lock && \
-    bundle config set without '' && \
-    bundle install --jobs 4 --retry 3
+# Install gems for Linux platform (will create new Gemfile.lock)
+bundle install --jobs 4 --retry 3
 
 # Copy application code
 COPY backend/ /app/
