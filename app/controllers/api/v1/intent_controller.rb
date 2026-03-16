@@ -1,7 +1,7 @@
 module Api
   module V1
     class IntentController < BaseController
-      skip_before_action :authenticate_user!
+      skip_before_action :authenticate_user!, raise: false
       
       # weights para scoring de intent
       INTENT_WEIGHTS = {

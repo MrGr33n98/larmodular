@@ -1,7 +1,7 @@
 module Api
   module V1
     class AuthController < BaseController
-      skip_before_action :authenticate_user_from_token!, only: [:login, :register]
+      skip_before_action :authenticate_user_from_token!, only: [:login, :register], raise: false
       
       def login
         user = User.find_by(email: params[:email])

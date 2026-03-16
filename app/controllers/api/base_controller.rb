@@ -1,7 +1,7 @@
 module Api
   class BaseController < ApplicationController
     protect_from_forgery with: :null_session
-    skip_before_action :verify_authenticity_token
+    skip_before_action :verify_authenticity_token, raise: false
     before_action :set_default_response_format
     before_action :authenticate_user_from_token!, unless: :devise_controller?
     before_action :check_rate_limit, only: [:create, :update, :destroy]

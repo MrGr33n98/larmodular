@@ -1,7 +1,7 @@
 module Api
   module V1
     class GeoController < BaseController
-      skip_before_action :authenticate_user!, except: []
+      skip_before_action :authenticate_user!, raise: false
       
       def detect
         ip = request.remote_ip || params[:ip]
