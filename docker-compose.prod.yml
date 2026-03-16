@@ -41,7 +41,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: backend/Dockerfile
+      dockerfile: Dockerfile
     image: ${BACKEND_IMAGE:-larmodular-backend:latest}
     container_name: larmodular-backend-prod
     restart: always
