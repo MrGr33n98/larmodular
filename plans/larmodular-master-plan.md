@@ -10,6 +10,7 @@ This plan outlines the strategic deployment and optimization of the LARModular M
 ## Phase 2: Technical Architecture & Performance
 - Design canonical structure and sitemap with @seo-structure-architect
 - Optimize Rails Backend performance (API response times) using @ruby-pro
+- Fix Build Errors: allow `vendor/` in `.dockerignore` and solve CRLF line endings in `bin/` files via @devops
 - Implement Core Web Vitals scalability optimizations with @scalability
 - Ensure security best practices for payment endpoints with @security
 

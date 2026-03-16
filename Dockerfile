@@ -26,6 +26,10 @@ RUN bundle config set --local deployment 'false' && \
 # Copy application code
 COPY . /app/
 
+# Fix CRLF in bin/ files and ensure asset directories exist
+RUN mkdir -p app/assets/images app/assets/stylesheets vendor/javascript app/javascript && \
+    sed -i 's/\r$//' bin/* || true
+
 # Precompile assets
 RUN RAILS_ENV=production SECRET_KEY_BASE=assets_precompile_bundle_key \
     bundle exec rails assets:precompile

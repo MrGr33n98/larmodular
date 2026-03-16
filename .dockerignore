@@ -12,7 +12,7 @@ spec
 .rspec
 coverage
 .bundle
-vendor
+# vendor (Removido para permitir precompile de assets)
 .DS_Store
 docs
 deploy
