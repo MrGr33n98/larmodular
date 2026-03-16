@@ -27,8 +27,9 @@ COPY backend/Gemfile backend/Gemfile.lock /app/
 
 WORKDIR /app
 
-# Install all gems (no exclusions)
-RUN bundle install --jobs 4 --retry 3
+# Install gems - remove Gemfile.lock to force platform-specific gem resolution
+RUN rm Gemfile.lock && \
+    bundle install --jobs 4 --retry 3
 
 # Copy application code
 COPY backend/ /app/
@@ -36,7 +37,7 @@ COPY config/ /app/config/
 
 # Precompile assets
 RUN RAILS_ENV=production SECRET_KEY_BASE=dummy_key_for_precompile \
-    bundle exec rails assets:precompile --trace
+    bundle exec rails assets:precompile
 
 # Create non-root user
 RUN useradd -m -s /bin/bash rails && \
