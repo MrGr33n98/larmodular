@@ -42,7 +42,7 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    image: larmodular-backend:latest
+    image: ${BACKEND_IMAGE:-larmodular-backend:latest}
     container_name: larmodular-backend-prod
     restart: always
     env_file:
@@ -72,7 +72,7 @@ services:
     build:
       context: .
       dockerfile: frontend/Dockerfile
-    image: larmodular-frontend:latest
+    image: ${FRONTEND_IMAGE:-larmodular-frontend:latest}
     container_name: larmodular-frontend-prod
     restart: always
     environment:
