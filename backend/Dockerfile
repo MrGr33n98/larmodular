@@ -5,7 +5,13 @@ LABEL description="LARModular Backend - Rails API"
 
 # Install system dependencies
 RUN apt-get update -qq && \
-    apt-get install -y build-essential libpq-dev nodejs curl git && \
+    apt-get install -y \
+    build-essential \
+    libpq-dev \
+    nodejs \
+    curl \
+    git \
+    postgresql-client && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -21,6 +27,7 @@ COPY backend/Gemfile backend/Gemfile.lock /app/
 
 WORKDIR /app
 
+# Configure Bundler and install all gems including development/test for build
 RUN bundle config set --local deployment 'false' && \
     bundle config set --local without 'development test' && \
     bundle install --jobs 4 --retry 3
@@ -29,9 +36,9 @@ RUN bundle config set --local deployment 'false' && \
 COPY backend/ /app/
 COPY config/ /app/config/
 
-# Precompile assets
-RUN RAILS_ENV=production SECRET_KEY_BASE=assets_precompile_bundle_key \
-    bundle exec rails assets:precompile
+# Precompile assets (using production env but without DB connection)
+RUN RAILS_ENV=production SECRET_KEY_BASE=dummy_key_for_precompile \
+    bundle exec rails assets:precompile --trace
 
 # Create non-root user
 RUN useradd -m -s /bin/bash rails && \
