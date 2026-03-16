@@ -62,8 +62,8 @@ jobs:
       - name: Build and push Backend
         uses: docker/build-push-action@v5
         with:
-          context: ./backend
-          file: ./backend/Dockerfile
+          context: .
+          file: Dockerfile
           push: true
           tags: ${{ steps.meta-backend.outputs.tags }}
           labels: ${{ steps.meta-backend.outputs.labels }}
@@ -120,6 +120,7 @@ jobs:
           sparse-checkout: |
             deploy
             docker-compose.prod.yml
+            Dockerfile
           sparse-checkout-cone-mode: false
 
       - name: Download deployed images info
@@ -141,7 +142,7 @@ jobs:
           host: ${{ secrets.EC2_HOST_STAGING }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "docker-compose.prod.yml,nginx/nginx.test.conf"
+          source: "docker-compose.prod.yml,nginx/nginx.test.conf,Dockerfile"
           target: "/home/ubuntu/larmodular/"
           overwrite: true
 
@@ -169,7 +170,7 @@ jobs:
             SECRET_KEY_BASE=${{ secrets.SECRET_KEY_BASE }}
             JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
             REDIS_URL=redis://redis:6379
-            NEXT_PUBLIC_API_URL=https://staging.larmodular.com.br
+            NEXT_PUBLIC_API_URL=http://13.218.53.147
             EOF
             
             # Login to GHCR
@@ -200,6 +201,7 @@ jobs:
           sparse-checkout: |
             deploy
             docker-compose.prod.yml
+            Dockerfile
           sparse-checkout-cone-mode: false
 
       - name: Download deployed images info
@@ -221,7 +223,7 @@ jobs:
           host: ${{ secrets.EC2_HOST_PRODUCTION }}
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "docker-compose.prod.yml,nginx/nginx.test.conf"
+          source: "docker-compose.prod.yml,nginx/nginx.test.conf,Dockerfile"
           target: "/home/ubuntu/larmodular/"
           overwrite: true
 
@@ -249,7 +251,7 @@ jobs:
             SECRET_KEY_BASE=${{ secrets.SECRET_KEY_BASE }}
             JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
             REDIS_URL=redis://redis:6379
-            NEXT_PUBLIC_API_URL=https://larmodular.com.br
+            NEXT_PUBLIC_API_URL=http://13.218.53.147
             EOF
             
             # Login to GHCR
