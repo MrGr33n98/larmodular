@@ -27,16 +27,14 @@ COPY backend/Gemfile backend/Gemfile.lock /app/
 
 WORKDIR /app
 
-# Configure Bundler and install all gems including development/test for build
-RUN bundle config set --local deployment 'false' && \
-    bundle config set --local without 'development test' && \
-    bundle install --jobs 4 --retry 3
+# Install all gems (no exclusions)
+RUN bundle install --jobs 4 --retry 3
 
 # Copy application code
 COPY backend/ /app/
 COPY config/ /app/config/
 
-# Precompile assets (using production env but without DB connection)
+# Precompile assets
 RUN RAILS_ENV=production SECRET_KEY_BASE=dummy_key_for_precompile \
     bundle exec rails assets:precompile --trace
 
