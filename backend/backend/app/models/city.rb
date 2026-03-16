@@ -16,4 +16,8 @@ class City < ApplicationRecord
   def to_s
     full_name
   end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["companies", "leads", "region"]
+  end
 end

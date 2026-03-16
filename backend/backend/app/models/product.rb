@@ -37,4 +37,8 @@ class Product < ApplicationRecord
   def self.friendly_find(param)
     find_by(slug: param) || find_by(id: param)
   end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["category", "city", "company", "favorites", "product_affinities", "product_views", "quote_requests", "region", "reviews"]
+  end
 end

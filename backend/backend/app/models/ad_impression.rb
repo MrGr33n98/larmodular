@@ -9,6 +9,10 @@ class AdImpression < ApplicationRecord
   scope :by_banner, ->(banner_id) { where(banner_id: banner_id) }
   scope :by_session, ->(session_id) { where(session_id: session_id) }
 
+  def self.ransackable_associations(_auth_object = nil)
+    %w[banner placement region city user]
+  end
+
   def to_s
     "Impressão ##{id} - #{banner.name}"
   end

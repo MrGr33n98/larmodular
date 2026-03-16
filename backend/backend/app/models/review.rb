@@ -13,4 +13,8 @@ class Review < ApplicationRecord
   def to_s
     "Avaliação #{rating}★ - #{user.name}"
   end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["company", "product", "user"]
+  end
 end

@@ -8,6 +8,10 @@ class Plan < ApplicationRecord
   scope :highlighted, -> { where(highlighted: true) }
   scope :ordered, -> { order(position: :asc) }
   
+  def self.ransackable_associations(_auth_object = nil)
+    %w[subscriptions]
+  end
+
   def to_s
     name
   end

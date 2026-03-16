@@ -31,4 +31,8 @@ class Company < ApplicationRecord
   def self.friendly_find(param)
     find_by(slug: param) || find_by(id: param)
   end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["categories", "city", "leads", "products", "quotes_requests", "region", "reviews", "user"]
+  end
 end

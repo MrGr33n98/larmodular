@@ -11,6 +11,10 @@ class FeatureFlag < ApplicationRecord
     flag.plans.include?(plan)
   end
 
+  def self.ransackable_associations(_auth_object = nil)
+    []
+  end
+
   def to_s
     "FeatureFlag: #{key}"
   end

@@ -22,4 +22,8 @@ class Category < ApplicationRecord
   def self.friendly_find(param)
     find_by(slug: param) || find_by(id: param)
   end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["children", "parent", "products"]
+  end
 end

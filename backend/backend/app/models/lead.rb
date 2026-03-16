@@ -32,4 +32,8 @@ class Lead < ApplicationRecord
     else 'ready'
     end
   end
+
+  def self.ransackable_associations(auth_object = nil)
+    ["city", "company", "intent_events", "lead_scores", "quote_requests", "region", "user"]
+  end
 end

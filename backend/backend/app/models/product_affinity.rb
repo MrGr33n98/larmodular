@@ -6,6 +6,10 @@ class ProductAffinity < ApplicationRecord
 
   scope :high_score, -> { where('score > ?', 50).order(score: :desc) }
 
+  def self.ransackable_associations(_auth_object = nil)
+    %w[product_a product_b]
+  end
+
   def to_s
     "#{product_a.name} <-> #{product_b.name}: #{score}"
   end

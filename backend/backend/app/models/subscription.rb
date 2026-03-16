@@ -10,6 +10,10 @@ class Subscription < ApplicationRecord
   scope :trialing, -> { where(status: 'trialing') }
   scope :past_due, -> { where(status: 'past_due') }
   
+  def self.ransackable_associations(_auth_object = nil)
+    %w[user plan payments]
+  end
+
   def to_s
     "#{plan.name} - #{status}"
   end

@@ -9,6 +9,10 @@ class AdBanner < ApplicationRecord
   scope :approved, -> { where(approved: true) }
   scope :by_placement, ->(placement_id) { where(placement_id: placement_id) }
 
+  def self.ransackable_associations(_auth_object = nil)
+    %w[campaign placement]
+  end
+
   def to_s
     name || "Banner ##{id}"
   end

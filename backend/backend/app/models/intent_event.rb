@@ -15,6 +15,10 @@ class IntentEvent < ApplicationRecord
   scope :by_type, ->(type) { where(event_type: type) }
   scope :by_lead, ->(lead_id) { where(lead_id: lead_id) }
 
+  def self.ransackable_associations(_auth_object = nil)
+    %w[lead user product company region city]
+  end
+
   def to_s
     "#{event_type} - #{created_at}"
   end

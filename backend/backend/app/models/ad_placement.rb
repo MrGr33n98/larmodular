@@ -10,6 +10,10 @@ class AdPlacement < ApplicationRecord
   scope :active, -> { where(active: true) }
   scope :by_page, ->(page) { where(page: page) }
   
+  def self.ransackable_associations(_auth_object = nil)
+    %w[banners impressions clicks]
+  end
+
   def to_s
     "#{page} - #{location}"
   end

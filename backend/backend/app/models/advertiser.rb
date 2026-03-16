@@ -7,6 +7,10 @@ class Advertiser < ApplicationRecord
 
   scope :active, -> { where(active: true) }
 
+  def self.ransackable_associations(_auth_object = nil)
+    %w[user campaigns]
+  end
+
   def to_s
     name
   end

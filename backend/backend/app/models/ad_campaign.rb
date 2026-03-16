@@ -10,6 +10,10 @@ class AdCampaign < ApplicationRecord
   scope :active, -> { where(status: 'active', active: true) }
   scope :by_advertiser, ->(advertiser_id) { where(advertiser_id: advertiser_id) }
 
+  def self.ransackable_associations(_auth_object = nil)
+    %w[advertiser banners]
+  end
+
   def to_s
     name
   end

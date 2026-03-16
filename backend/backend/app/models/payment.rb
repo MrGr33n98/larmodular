@@ -8,6 +8,10 @@ class Payment < ApplicationRecord
   scope :recent, -> { order(created_at: :desc) }
   scope :successful, -> { where(status: 'succeeded') }
 
+  def self.ransackable_associations(_auth_object = nil)
+    %w[subscription user]
+  end
+
   def to_s
     "Pagamento ##{id} - #{amount} #{currency}"
   end

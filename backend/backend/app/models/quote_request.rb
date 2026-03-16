@@ -10,6 +10,10 @@ class QuoteRequest < ApplicationRecord
   scope :recent, -> { order(created_at: :desc) }
   scope :converted, -> { where(converted: true) }
 
+  def self.ransackable_associations(_auth_object = nil)
+    %w[user product company lead]
+  end
+
   def to_s
     "Orçamento ##{id} - #{product.name}"
   end

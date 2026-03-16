@@ -9,6 +9,10 @@ class IntentSession < ApplicationRecord
   scope :recent, -> { order(started_at: :desc) }
   scope :active, -> { where('ended_at IS NULL') }
 
+  def self.ransackable_associations(_auth_object = nil)
+    %w[lead user region city events]
+  end
+
   def to_s
     "Sessão #{session_id}"
   end
