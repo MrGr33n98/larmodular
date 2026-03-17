@@ -7,12 +7,10 @@ FactoryBot.define do
     email { 'contato@empresa.com' }
     address { 'Rua Example, 123' }
     status { 'approved' }
-    active { true }
     verified { false }
     featured { false }
     association :region
     association :city
-    association :user, factory: :user
     
     factory :company_featured do
       featured { true }

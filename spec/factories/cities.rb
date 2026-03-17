@@ -1,7 +1,6 @@
 FactoryBot.define do
   factory :city do
-    name { 'São Paulo' }
-    slug { 'sao-paulo' }
+    sequence(:name) { |n| "Cidade #{n}" }
     state { 'SP' }
     association :region
     active { true }

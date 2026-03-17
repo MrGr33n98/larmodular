@@ -49,12 +49,12 @@ module Api
         params.require(:lead).permit(:name, :email, :phone, :company_id, :region_id, :city_id, :source, :notes, :metadata)
       end
 
-      def serialize(lead)
-        LeadSerializer.new(lead).as_json
-      end
-
-      def serialize(leads)
-        leads.map { |l| LeadSerializer.new(l).as_json }
+      def serialize(resource)
+        if resource.respond_to?(:map)
+          resource.map { |l| LeadSerializer.new(l).as_json }
+        else
+          LeadSerializer.new(resource).as_json
+        end
       end
     end
   end
