@@ -1,5 +1,5 @@
 ActiveAdmin.register Post do
-  permit_params :title, :body, :comment, :published_at, :user_id
+  permit_params :title, :body, :published_at, :user_id
 
   scope :all
   scope :published
