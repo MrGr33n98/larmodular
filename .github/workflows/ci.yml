@@ -13,7 +13,7 @@ env:
 jobs:
   # Backend Tests
   backend-test:
-    name: Backend Tests (Ruby ${{ env.RUBY_VERSION }})
+    name: Backend Tests (Ruby 3.2.2)
     runs-on: ubuntu-latest
     
     services:
@@ -74,7 +74,7 @@ jobs:
 
   # Frontend Tests
   frontend-test:
-    name: Frontend Tests (Node ${{ env.NODE_VERSION }})
+    name: Frontend Tests (Node 20)
     runs-on: ubuntu-latest
     
     steps:
