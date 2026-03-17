@@ -256,6 +256,7 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_08_205200) do
     t.boolean "featured", default: false
     t.boolean "verified", default: false
     t.integer "experience_years", default: 0
+    t.string "zip_code"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.jsonb "cover_data"

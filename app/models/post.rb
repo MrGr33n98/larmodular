@@ -1,11 +1,10 @@
 class Post < ApplicationRecord
   validates :title, presence: true, length: { minimum: 5, maximum: 50 }
-  validates :body, presence: true # , length: { minimum: 10, maximum: 1000 }
+  validates :body, presence: true
   belongs_to :user
   has_many :comments, dependent: :destroy
-  has_many :notifications, through: :user, dependent: :destroy
-  has_many :notification_mentions, through: :user, dependent: :destroy
   has_noticed_notifications model_name: 'Noticed::Notification'
+  has_many :notification_mentions, as: :record, dependent: :destroy, class_name: 'Noticed::Event'
   validate :no_curse_words
 
   scope :published, -> { where.not(published_at: nil) }

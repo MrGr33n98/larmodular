@@ -1,185 +1,333 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Home, Building, Package, User, LogOut, Compass, Sparkles } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import {
+  Menu, X, Search, ChevronDown,
+  Home, Warehouse, Building2, TreePine, Briefcase, Tent,
+  LogOut, User, ArrowRight, Sparkles,
+} from 'lucide-react';
+import { useState, useEffect, useRef, FormEvent } from 'react';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
+const CATEGORIES = [
+  { label: 'Tiny Houses',      slug: 'tiny-house',  icon: Home,      desc: 'Casas compactas e sustentáveis' },
+  { label: 'Containers',       slug: 'container',   icon: Warehouse, desc: 'Residências e espaços em container' },
+  { label: 'Casas Modulares',  slug: 'modular',     icon: Building2, desc: 'Construção rápida e eficiente' },
+  { label: 'Chalés',           slug: 'chale',       icon: TreePine,  desc: 'Lazer e pousadas na natureza' },
+  { label: 'Escritórios',      slug: 'escritorio',  icon: Briefcase, desc: 'Home office e coworkings modulares' },
+  { label: 'Glamping',         slug: 'glamping',    icon: Tent,      desc: 'Turismo e hospitalidade sustentável' },
+];
+
+const FOR_COMPANIES = [
+  { label: 'Cadastrar minha empresa', href: '/cadastro',      desc: 'Liste seus produtos gratuitamente' },
+  { label: 'Planos e Preços',         href: '/planos',        desc: 'Destaque no marketplace' },
+  { label: 'Como Funciona',           href: '/como-funciona', desc: 'Entenda a plataforma' },
+];
+
 export function Header() {
   const { user, logout } = useAuth();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
+  const router = useRouter();
+  const [mobileOpen, setMobileOpen]       = useState(false);
+  const [catOpen, setCatOpen]             = useState(false);
+  const [compOpen, setCompOpen]           = useState(false);
+  const [scrolled, setScrolled]           = useState(false);
+  const [query, setQuery]                 = useState('');
+
+  const catRef  = useRef<HTMLDivElement>(null);
+  const compRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    const onScroll = () => setScrolled(window.scrollY > 16);
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  /* close dropdowns on outside click */
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (catRef.current  && !catRef.current.contains(e.target as Node))  setCatOpen(false);
+      if (compRef.current && !compRef.current.contains(e.target as Node)) setCompOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const handleSearch = (e: FormEvent) => {
+    e.preventDefault();
+    if (query.trim()) router.push(`/busca?q=${encodeURIComponent(query.trim())}`);
+  };
+
   return (
-    <header 
-      className={cn(
-        "sticky top-0 z-50 transition-all duration-500 w-full",
-        scrolled ? "py-2" : "py-6"
-      )}
-    >
-      <div className="container mx-auto px-6">
-        <div 
-          className={cn(
-            "flex items-center justify-between h-20 transition-all duration-500 rounded-[32px] px-8",
-            scrolled 
-              ? "bg-white/70 backdrop-blur-2xl shadow-2xl border-none" 
-              : "bg-white/40 backdrop-blur-md shadow-clay-flat border border-white/40"
-          )}
-        >
-          <Link href="/" className="flex items-center space-x-3 group">
-            <div className="w-12 h-12 bg-clay-primary rounded-2xl flex items-center justify-center shadow-clay-flat transition-transform group-hover:rotate-6 group-active:scale-95">
-              <Sparkles className="text-white w-6 h-6" />
+    <header className={cn(
+      'sticky top-0 z-50 w-full transition-all duration-300',
+      scrolled ? 'py-1.5' : 'py-3',
+    )}>
+      <div className="container mx-auto px-4">
+        <div className={cn(
+          'flex items-center gap-3 h-14 transition-all duration-300 rounded-2xl px-5',
+          scrolled
+            ? 'bg-white/80 backdrop-blur-2xl shadow-lg border border-white/60'
+            : 'bg-white/50 backdrop-blur-md shadow-md border border-white/40',
+        )}>
+
+          {/* ── Logo ── */}
+          <Link href="/" className="flex items-center gap-2 shrink-0 group mr-2">
+            <div className="w-8 h-8 bg-clay-primary rounded-xl flex items-center justify-center shadow-sm transition-transform group-hover:rotate-6">
+              <Sparkles className="text-white w-4 h-4" />
             </div>
-            <span className="font-display font-black text-2xl text-clay-text-primary tracking-tighter">
+            <span className="font-display font-bold text-lg text-clay-text-primary tracking-tight leading-none">
               LAR<span className="text-clay-primary">Modular</span>
             </span>
           </Link>
 
-          <nav className="hidden md:flex items-center space-x-10">
-            {[
-              { label: 'Início', href: '/', icon: Home },
-              { label: 'Buscar', href: '/busca', icon: Package },
-              { label: 'Empresas', href: '/empresas', icon: Building }
-            ].map((item) => (
-              <Link
-                key={item.label}
-                href={item.href}
-                className="text-clay-text-muted hover:text-clay-primary transition-colors text-xs font-black uppercase tracking-widest relative group flex items-center gap-2"
+          {/* ── Desktop nav ── */}
+          <nav className="hidden md:flex items-center gap-1 flex-1">
+
+            {/* Categorias */}
+            <div ref={catRef} className="relative">
+              <button
+                onClick={() => { setCatOpen(v => !v); setCompOpen(false); }}
+                className={cn(
+                  'flex items-center gap-1 px-3 py-2 rounded-xl text-sm font-medium transition-colors',
+                  catOpen
+                    ? 'bg-clay-primary/10 text-clay-primary'
+                    : 'text-clay-text-secondary hover:bg-clay-surface-2/60 hover:text-clay-text-primary',
+                )}
               >
-                <item.icon className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
-                <span>{item.label}</span>
-                <span className="absolute -bottom-2 left-0 w-0 h-1 bg-clay-primary transition-all group-hover:w-full rounded-full" />
-              </Link>
-            ))}
+                Categorias
+                <ChevronDown className={cn('w-3.5 h-3.5 transition-transform', catOpen && 'rotate-180')} />
+              </button>
+
+              <AnimatePresence>
+                {catOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 6, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 6, scale: 0.98 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute top-full left-0 mt-2 w-[520px] bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl border border-clay-surface-2/60 p-4 z-50"
+                  >
+                    <p className="text-[11px] font-semibold text-clay-text-muted uppercase tracking-widest mb-3 px-1">
+                      Explorar por tipo
+                    </p>
+                    <div className="grid grid-cols-2 gap-1.5">
+                      {CATEGORIES.map((cat) => (
+                        <Link
+                          key={cat.slug}
+                          href={`/busca?categoria=${cat.slug}`}
+                          onClick={() => setCatOpen(false)}
+                          className="flex items-center gap-3 p-3 rounded-xl hover:bg-clay-primary/8 group transition-colors"
+                        >
+                          <div className="w-9 h-9 rounded-lg bg-clay-surface-2/60 flex items-center justify-center shrink-0 group-hover:bg-clay-primary group-hover:text-white transition-colors">
+                            <cat.icon className="w-4 h-4 text-clay-primary group-hover:text-white transition-colors" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-clay-text-primary leading-none mb-0.5">{cat.label}</p>
+                            <p className="text-xs text-clay-text-muted leading-none">{cat.desc}</p>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                    <div className="mt-3 pt-3 border-t border-clay-surface-2/60">
+                      <Link
+                        href="/categorias"
+                        onClick={() => setCatOpen(false)}
+                        className="flex items-center gap-1.5 text-sm text-clay-primary font-medium hover:underline"
+                      >
+                        Ver todas as categorias <ArrowRight className="w-3.5 h-3.5" />
+                      </Link>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Para Empresas */}
+            <div ref={compRef} className="relative">
+              <button
+                onClick={() => { setCompOpen(v => !v); setCatOpen(false); }}
+                className={cn(
+                  'flex items-center gap-1 px-3 py-2 rounded-xl text-sm font-medium transition-colors',
+                  compOpen
+                    ? 'bg-clay-primary/10 text-clay-primary'
+                    : 'text-clay-text-secondary hover:bg-clay-surface-2/60 hover:text-clay-text-primary',
+                )}
+              >
+                Para Empresas
+                <ChevronDown className={cn('w-3.5 h-3.5 transition-transform', compOpen && 'rotate-180')} />
+              </button>
+
+              <AnimatePresence>
+                {compOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 6, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 6, scale: 0.98 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute top-full left-0 mt-2 w-64 bg-white/95 backdrop-blur-xl rounded-2xl shadow-xl border border-clay-surface-2/60 p-3 z-50"
+                  >
+                    {FOR_COMPANIES.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setCompOpen(false)}
+                        className="flex flex-col gap-0.5 p-3 rounded-xl hover:bg-clay-primary/8 transition-colors group"
+                      >
+                        <span className="text-sm font-medium text-clay-text-primary group-hover:text-clay-primary transition-colors">
+                          {item.label}
+                        </span>
+                        <span className="text-xs text-clay-text-muted">{item.desc}</span>
+                      </Link>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            <Link
+              href="/empresas"
+              className="px-3 py-2 rounded-xl text-sm font-medium text-clay-text-secondary hover:bg-clay-surface-2/60 hover:text-clay-text-primary transition-colors"
+            >
+              Fabricantes
+            </Link>
+
+            {/* Search */}
+            <form onSubmit={handleSearch} className="flex-1 mx-2 max-w-sm">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-clay-text-muted pointer-events-none" />
+                <input
+                  type="text"
+                  value={query}
+                  onChange={e => setQuery(e.target.value)}
+                  placeholder="Buscar tiny houses, containers…"
+                  className="w-full h-9 pl-8 pr-3 bg-clay-surface-2/50 border border-clay-surface-3/50 rounded-xl text-sm text-clay-text-primary placeholder:text-clay-text-muted focus:outline-none focus:ring-2 focus:ring-clay-primary/30 focus:border-clay-primary/40 transition-all"
+                />
+              </div>
+            </form>
           </nav>
 
-          <div className="hidden md:flex items-center space-x-6">
+          {/* ── Auth buttons ── */}
+          <div className="hidden md:flex items-center gap-2 shrink-0">
             {user ? (
-              <div className="flex items-center space-x-4">
+              <>
                 <Link href="/dashboard">
-                  <Button variant="clay" size="sm" className="px-6 h-11 rounded-xl">
-                    <User className="w-4 h-4 mr-2" />
-                    Meu Painel
+                  <Button variant="ghost" size="sm" className="h-9 px-4 text-sm font-medium rounded-xl">
+                    <User className="w-3.5 h-3.5 mr-1.5" />
+                    Painel
                   </Button>
                 </Link>
-                <button 
-                  onClick={logout} 
-                  className="w-11 h-11 rounded-xl bg-red-50 flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-sm"
+                <button
+                  onClick={logout}
+                  className="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center text-red-400 hover:bg-red-500 hover:text-white transition-all"
                   title="Sair"
                 >
-                  <LogOut className="w-5 h-5" />
+                  <LogOut className="w-4 h-4" />
                 </button>
-              </div>
+              </>
             ) : (
-              <div className="flex items-center space-x-4">
+              <>
                 <Link href="/login">
-                  <Button variant="ghost" className="font-black text-xs uppercase tracking-widest text-clay-text-muted">
+                  <Button variant="ghost" size="sm" className="h-9 px-4 text-sm font-medium rounded-xl text-clay-text-secondary">
                     Entrar
                   </Button>
                 </Link>
                 <Link href="/cadastro">
-                  <Button className="h-12 px-8 rounded-xl shadow-xl hover:shadow-2xl">
-                    Começar
+                  <Button size="sm" className="h-9 px-5 text-sm font-medium rounded-xl shadow-sm">
+                    Começar grátis
                   </Button>
                 </Link>
-              </div>
+              </>
             )}
           </div>
 
+          {/* ── Mobile toggle ── */}
           <button
-            className="md:hidden w-12 h-12 flex items-center justify-center bg-clay-surface-2 rounded-2xl text-clay-text-primary hover:bg-clay-primary hover:text-white transition-all shadow-clay-flat"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            className="md:hidden w-9 h-9 flex items-center justify-center bg-clay-surface-2/60 rounded-xl text-clay-text-primary hover:bg-clay-primary hover:text-white transition-all ml-auto"
+            onClick={() => setMobileOpen(v => !v)}
           >
-            {mobileMenuOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
+            {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu */}
+      {/* ── Mobile menu ── */}
       <AnimatePresence>
-        {mobileMenuOpen && (
+        {mobileOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="md:hidden absolute top-full left-0 w-full p-6 z-50"
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.18 }}
+            className="md:hidden absolute top-full left-0 w-full px-4 pt-2 z-50"
           >
-            <div className="clay-card p-8 bg-white/95 backdrop-blur-2xl shadow-2xl border-none space-y-6">
-              <Link
-                href="/"
-                className="flex items-center space-x-4 text-clay-text-primary font-display font-black text-lg p-4 bg-clay-surface-2/30 rounded-2xl transition-all"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <Home className="w-6 h-6 text-clay-primary" />
-                <span>Início</span>
-              </Link>
-              <Link
-                href="/busca"
-                className="flex items-center space-x-4 text-clay-text-primary font-display font-black text-lg p-4 bg-clay-surface-2/30 rounded-2xl transition-all"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <Package className="w-6 h-6 text-clay-primary" />
-                <span>Buscar</span>
-              </Link>
-              <Link
-                href="/empresas"
-                className="flex items-center space-x-4 text-clay-text-primary font-display font-black text-lg p-4 bg-clay-surface-2/30 rounded-2xl transition-all"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <Building className="w-6 h-6 text-clay-primary" />
-                <span>Empresas</span>
-              </Link>
-              
-              <div className="pt-6 border-t border-clay-surface-2">
+            <div className="bg-white/96 backdrop-blur-2xl rounded-2xl shadow-xl border border-clay-surface-2/60 p-4 space-y-1">
+
+              {/* Mobile search */}
+              <form onSubmit={(e) => { handleSearch(e); setMobileOpen(false); }} className="mb-3">
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-clay-text-muted pointer-events-none" />
+                  <input
+                    type="text"
+                    value={query}
+                    onChange={e => setQuery(e.target.value)}
+                    placeholder="Buscar tiny houses, containers…"
+                    className="w-full h-10 pl-9 pr-3 bg-clay-surface-2/50 border border-clay-surface-3/40 rounded-xl text-sm placeholder:text-clay-text-muted focus:outline-none focus:ring-2 focus:ring-clay-primary/30"
+                  />
+                </div>
+              </form>
+
+              <p className="text-[11px] font-semibold text-clay-text-muted uppercase tracking-widest px-2 pb-1">Categorias</p>
+              {CATEGORIES.map((cat) => (
+                <Link
+                  key={cat.slug}
+                  href={`/busca?categoria=${cat.slug}`}
+                  onClick={() => setMobileOpen(false)}
+                  className="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-clay-primary/8 transition-colors group"
+                >
+                  <div className="w-8 h-8 rounded-lg bg-clay-surface-2/60 flex items-center justify-center group-hover:bg-clay-primary transition-colors">
+                    <cat.icon className="w-4 h-4 text-clay-primary group-hover:text-white transition-colors" />
+                  </div>
+                  <span className="text-sm font-medium text-clay-text-primary">{cat.label}</span>
+                </Link>
+              ))}
+
+              <div className="border-t border-clay-surface-2/60 pt-2 mt-2 space-y-1">
+                <Link href="/empresas" onClick={() => setMobileOpen(false)}
+                  className="flex items-center px-3 py-2.5 rounded-xl text-sm font-medium text-clay-text-secondary hover:bg-clay-surface-2/60 transition-colors">
+                  Fabricantes
+                </Link>
+                <Link href="/cadastro" onClick={() => setMobileOpen(false)}
+                  className="flex items-center px-3 py-2.5 rounded-xl text-sm font-medium text-clay-text-secondary hover:bg-clay-surface-2/60 transition-colors">
+                  Para Empresas
+                </Link>
+              </div>
+
+              <div className="border-t border-clay-surface-2/60 pt-3 mt-1 flex flex-col gap-2">
                 {user ? (
-                  <div className="space-y-4">
-                    <Link
-                      href="/dashboard"
-                      className="flex items-center space-x-4 text-clay-text-primary font-display font-black text-lg p-4 bg-clay-surface-2/30 rounded-2xl transition-all"
-                      onClick={() => setMobileMenuOpen(false)}
-                    >
-                      <User className="w-6 h-6 text-clay-primary" />
-                      <span>Meu Painel</span>
+                  <>
+                    <Link href="/dashboard" onClick={() => setMobileOpen(false)}>
+                      <Button variant="ghost" className="w-full h-10 rounded-xl text-sm font-medium">
+                        <User className="w-4 h-4 mr-2" /> Meu Painel
+                      </Button>
                     </Link>
-                    <button
-                      onClick={() => {
-                        logout();
-                        setMobileMenuOpen(false);
-                      }}
-                      className="flex items-center space-x-4 text-red-500 font-display font-black text-lg p-4 bg-red-50 rounded-2xl transition-all w-full text-left"
-                    >
-                      <LogOut className="w-6 h-6" />
-                      <span>Sair da Conta</span>
+                    <button onClick={() => { logout(); setMobileOpen(false); }}
+                      className="w-full h-10 rounded-xl bg-red-50 text-red-500 text-sm font-medium hover:bg-red-500 hover:text-white transition-all flex items-center justify-center gap-2">
+                      <LogOut className="w-4 h-4" /> Sair
                     </button>
-                  </div>
+                  </>
                 ) : (
-                  <div className="flex flex-col gap-4">
-                    <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
-                      <Button variant="ghost" className="w-full h-14 rounded-2xl text-lg font-display font-black">
-                        Entrar
-                      </Button>
+                  <>
+                    <Link href="/login" onClick={() => setMobileOpen(false)}>
+                      <Button variant="ghost" className="w-full h-10 rounded-xl text-sm font-medium">Entrar</Button>
                     </Link>
-                    <Link href="/cadastro" onClick={() => setMobileMenuOpen(false)}>
-                      <Button className="w-full h-14 rounded-2xl text-lg font-display font-black shadow-xl">
-                        Cadastrar Agora
-                      </Button>
+                    <Link href="/cadastro" onClick={() => setMobileOpen(false)}>
+                      <Button className="w-full h-10 rounded-xl text-sm font-medium shadow-sm">Começar grátis</Button>
                     </Link>
-                  </div>
+                  </>
                 )}
               </div>
             </div>

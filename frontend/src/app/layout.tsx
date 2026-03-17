@@ -8,23 +8,25 @@ import { Toaster } from "@/components/ui/toast";
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
+  weight: ["300", "400", "500", "600", "700"],
 });
 
 const nunito = Nunito({
   subsets: ["latin"],
-  variable: "--font-display",
-  weight: ["400", "500", "600", "700", "800", "900"],
+  variable: "--font-nunito",
+  weight: ["400", "500", "600", "700"],
 });
 
 const nunitoSans = Nunito_Sans({
   subsets: ["latin"],
   variable: "--font-body",
-  weight: ["400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600"],
 });
 
 const plusJakartaSans = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  variable: "--font-jakarta",
+  variable: "--font-display",
+  weight: ["400", "500", "600", "700", "800"],
 });
 
 export const metadata: Metadata = {
@@ -78,7 +80,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={`${inter.variable} ${nunito.variable} ${nunitoSans.variable} ${plusJakartaSans.variable} font-body min-h-screen flex flex-col bg-clay-surface-1 antialiased`}>
+      <body className={`${inter.variable} ${nunito.variable} ${nunitoSans.variable} ${plusJakartaSans.variable} font-sans min-h-screen flex flex-col bg-clay-surface-1 antialiased`}>
         <AuthProvider>
           <Header />
           <main className="flex-1">

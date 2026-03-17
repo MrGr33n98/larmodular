@@ -36,17 +36,6 @@ class CommentsController < ApplicationController
     end
   end
 
-  def no_curse_words
-    plain_text_body = body.to_plain_text if body.present?
-    return unless plain_text_body.present? && curse_word_found?(plain_text_body)
-
-    errors.add(:base, 'Your comment contains inappropriate language and cannot be saved.')
-  end
-
-  def curse_word_found?(text)
-    CURSE_WORDS.any? { |word| text.match?(Regexp.new(word, Regexp::IGNORECASE)) }
-  end
-
   private
 
   def set_post

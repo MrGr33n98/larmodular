@@ -12,7 +12,6 @@ class User < ApplicationRecord
   has_many :intent_events, dependent: :destroy
   has_many :intent_sessions, dependent: :destroy
   has_many :advertisers, dependent: :destroy
-  has_one :company, dependent: :destroy
   # By implementing this feature, users will be able to conveniently
   # associate and access all notifications directed towards them.
   has_many :notifications, as: :recipient, dependent: :destroy, class_name: 'Noticed::Notification'
@@ -21,5 +20,7 @@ class User < ApplicationRecord
   # It's important to ensure that notifications mentioning us are accessible.
   has_many :notification_mentions, as: :record, dependent: :destroy, class_name: 'Noticed::Event'
 
-
+  def to_s
+    name.presence || email
+  end
 end
