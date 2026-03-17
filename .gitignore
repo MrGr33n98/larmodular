@@ -24,7 +24,8 @@ vendor/bundle/
 # Rails
 *.log
 *.swp
-*.swo
+*.swp
+*.swp
 *.pid
 tmp/
 storage/
@@ -87,3 +88,7 @@ master.key
 *.tmp
 *.temp
 
+# Agentic Tools
+.claude/
+.opencode/
+scripts/install-agency-agents.sh

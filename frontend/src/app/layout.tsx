@@ -1,5 +1,4 @@
-import type { Metadata } from "next";
-import { Inter, Merriweather, Plus_Jakarta_Sans } from "next/font/google";
+import { Inter, Nunito, Nunito_Sans, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
@@ -11,10 +10,16 @@ const inter = Inter({
   variable: "--font-sans",
 });
 
-const merriweather = Merriweather({
-  weight: ["300", "400", "700", "900"],
+const nunito = Nunito({
   subsets: ["latin"],
-  variable: "--font-serif",
+  variable: "--font-display",
+  weight: ["400", "500", "600", "700", "800", "900"],
+});
+
+const nunitoSans = Nunito_Sans({
+  subsets: ["latin"],
+  variable: "--font-body",
+  weight: ["400", "500", "600", "700"],
 });
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -73,7 +78,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={`${inter.variable} ${merriweather.variable} ${plusJakartaSans.variable} font-sans min-h-screen flex flex-col bg-areia texture-paper`}>
+      <body className={`${inter.variable} ${nunito.variable} ${nunitoSans.variable} ${plusJakartaSans.variable} font-body min-h-screen flex flex-col bg-clay-surface-1 antialiased`}>
         <AuthProvider>
           <Header />
           <main className="flex-1">

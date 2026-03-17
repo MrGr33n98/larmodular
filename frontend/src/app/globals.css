@@ -1,189 +1,226 @@
 @import "tailwindcss";
 
+@import "tailwindcss";
+
 :root {
-  --background: #F5F1EB;
-  --background-secondary: #EDE8E1;
-  --foreground: #2C2416;
-  --foreground-muted: #5C5347;
-  
-  --color-terracota: #C67B5C;
-  --color-terracota-dark: #A85D3F;
-  --color-terracota-light: #D99B7F;
-  --color-floresta: #4A6741;
-  --color-floresta-dark: #3A5233;
-  --color-floresta-light: #6B8B5E;
-  --color-horizonte: #5B8FB9;
-  --color-horizonte-dark: #4A7A9E;
-  --color-horizonte-light: #7BA8CC;
-  --color-areia: #F5F1EB;
-  --color-areia-escuro: #E8E2D6;
-  --color-creme: #FAF7F2;
-  --color-argila: #8B7355;
+  /* --- COLOR PALETTE --- */
+  /* Sky & atmosphere */
+  --clay-sky-warm:     #e8f0d0;
+  --clay-sky-cool:     #c8dce0;
+  --clay-sky-sunrise:  #f5e8b0;
+  --clay-sky-mist:     #dde8dc;
 
-  /* Premium Claymorphism Tokens */
-  --brand-primary: #E76F51;
-  --brand-secondary: #264653;
-  --surface-base: #FCFDFD;
-  --surface-elevated: #FFFFFF;
-  
-  --shadow-soft: 0 4px 20px rgba(44, 36, 22, 0.08);
-  --shadow-medium: 0 8px 30px rgba(44, 36, 22, 0.12);
-  --shadow-elevated: 0 12px 40px rgba(44, 36, 22, 0.16);
+  /* Terrain greens */
+  --clay-grass-light:  #8ecf60;
+  --clay-grass-mid:    #6ab840;
+  --clay-grass-deep:   #4a9828;
+  --clay-grass-shadow: #3a7a1e;
+  --clay-moss:         #5a9030;
 
-  /* Claymorphism Shadows */
-  --shadow-clay-external: 0 10px 30px rgba(0,0,0,0.03);
-  --shadow-clay-internal-1: inset 6px 6px 12px rgba(0,0,0,0.03);
-  --shadow-clay-internal-2: inset -6px -6px 12px rgba(255,255,255,0.7);
-  
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --radius-card: 32px;
+  /* Mountain & stone */
+  --clay-stone-light:  #c8c0b0;
+  --clay-stone-mid:    #a8a090;
+  --clay-stone-dark:   #807868;
+  --clay-stone-shadow: #605850;
+
+  /* Snow & light */
+  --clay-snow:         #f0ece4;
+  --clay-snow-bright:  #faf8f4;
+  --clay-cream:        #f5f0e8;
+
+  /* Wood & warm earth */
+  --clay-wood-light:   #d4a870;
+  --clay-wood-mid:     #b88848;
+  --clay-wood-dark:    #8a6030;
+  --clay-soil:         #7a5030;
+
+  /* Architecture — container/industrial */
+  --clay-metal-light:  #8a9098;
+  --clay-metal-mid:    #606870;
+  --clay-metal-dark:   #404850;
+
+  /* Accent foliage */
+  --clay-leaf-bright:  #70c840;
+  --clay-leaf-mid:     #50a828;
+  --clay-leaf-dark:    #306818;
+
+  /* UI Semantic */
+  --clay-primary:      #6ab840;
+  --clay-primary-deep: #4a9828;
+  --clay-secondary:    #b88848;
+  --clay-accent:       #e07830;
+  --clay-info:         #4898c0;
+  --clay-success:      #48b868;
+  --clay-warning:      #e0b030;
+  --clay-danger:       #d05840;
+  --clay-neutral:      #8a9890;
+
+  /* Surface layers */
+  --clay-surface-0:    #faf8f4;
+  --clay-surface-1:    #f0ece4;
+  --clay-surface-2:    #e4ddd0;
+  --clay-surface-3:    #d4ccc0;
+
+  /* Text */
+  --clay-text-primary:   #2c2820;
+  --clay-text-secondary: #5a5248;
+  --clay-text-muted:     #8a8078;
+  --clay-text-on-dark:   #f5f0e8;
+
+  /* --- SPACING SCALE --- */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  24px;
+  --space-6:  32px;
+  --space-7:  48px;
+  --space-8:  64px;
+  --space-9:  96px;
+
+  /* --- BORDER RADIUS (clay = very round) --- */
+  --radius-sm:   8px;
+  --radius-md:   14px;
+  --radius-lg:   20px;
+  --radius-xl:   28px;
+  --radius-2xl:  40px;
+  --radius-pill: 999px;
+
+  /* --- CLAY SHADOWS (multi-layer = depth illusion) --- */
+  --shadow-sm:   0 2px 0 rgba(0,0,0,0.12), 0 4px 12px rgba(0,0,0,0.08);
+  --shadow-md:   0 4px 0 rgba(0,0,0,0.14), 0 8px 24px rgba(0,0,0,0.10);
+  --shadow-lg:   0 6px 0 rgba(0,0,0,0.16), 0 16px 40px rgba(0,0,0,0.12);
+  --shadow-xl:   0 8px 0 rgba(0,0,0,0.18), 0 24px 56px rgba(0,0,0,0.14);
+
+  /* Clay inset highlight (top edge light) */
+  --clay-inset: inset 0 2px 0 rgba(255,255,255,0.55), inset 0 -2px 0 rgba(0,0,0,0.08);
+
+  /* --- TRANSITIONS --- */
+  --ease-clay:   cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out:    cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-fast:   150ms;
+  --duration-mid:    250ms;
+  --duration-slow:   400ms;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-background-secondary: var(--background-secondary);
-  --color-foreground: var(--foreground);
-  --color-foreground-muted: var(--foreground-muted);
-  
-  --color-terracota: var(--color-terracota);
-  --color-terracota-dark: var(--color-terracota-dark);
-  --color-terracota-light: var(--color-terracota-light);
-  --color-floresta: var(--color-floresta);
-  --color-floresta-dark: var(--color-floresta-dark);
-  --color-floresta-light: var(--color-floresta-light);
-  --color-horizonte: var(--color-horizonte);
-  --color-horizonte-dark: var(--color-horizonte-dark);
-  --color-horizonte-light: var(--color-horizonte-light);
-  --color-areia: var(--color-areia);
-  --color-areia-escuro: var(--color-areia-escuro);
-  --color-creme: var(--color-creme);
-  --color-argila: var(--color-argila);
-
-  /* Premium Claymorphism Colors */
-  --color-brand-primary: var(--brand-primary);
-  --color-brand-secondary: var(--brand-secondary);
-  --color-surface-base: var(--surface-base);
-  --color-surface-elevated: var(--surface-elevated);
-  
-  --font-serif: var(--font-serif);
-  --font-sans: var(--font-sans);
-  --font-jakarta: var(--font-jakarta);
-  
-  --shadow-soft: var(--shadow-soft);
-  --shadow-medium: var(--shadow-medium);
-  --shadow-elevated: var(--shadow-elevated);
-
-  /* Claymorphism Shadows in Theme */
-  --shadow-clay-external: var(--shadow-clay-external);
-  
-  --radius-sm: var(--radius-sm);
-  --radius-md: var(--radius-md);
-  --radius-lg: var(--radius-lg);
-  --radius-xl: var(--radius-xl);
-  --radius-card: var(--radius-card);
+  --color-clay-primary: var(--clay-primary);
+  --color-clay-primary-deep: var(--clay-primary-deep);
+  --color-clay-secondary: var(--clay-secondary);
+  --color-clay-surface-0: var(--clay-surface-0);
+  --color-clay-surface-1: var(--clay-surface-1);
+  --color-clay-surface-2: var(--clay-surface-2);
+  --color-clay-surface-3: var(--clay-surface-3);
+  --color-clay-text-primary: var(--clay-text-primary);
+  --color-clay-text-secondary: var(--clay-text-secondary);
+  --color-clay-text-muted: var(--clay-text-muted);
+  --shadow-sm: var(--shadow-sm);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-xl: var(--shadow-xl);
 }
 
 body {
-  background: var(--surface-base);
-  color: var(--brand-secondary);
-  font-family: var(--font-jakarta), var(--font-sans), system-ui, sans-serif;
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--clay-text-primary);
+  background: var(--clay-surface-1);
+  background-image:
+    radial-gradient(ellipse at 0% 0%, rgba(245,232,176,0.4) 0%, transparent 60%),
+    radial-gradient(ellipse at 100% 0%, rgba(200,220,224,0.5) 0%, transparent 55%),
+    radial-gradient(ellipse at 50% 100%, rgba(106,184,64,0.15) 0%, transparent 50%);
+  min-height: 100vh;
   -webkit-font-smoothing: antialiased;
-  position: relative;
-}
-
-body::after {
-  content: "";
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 280px;
-  background: url('/background-larmodular.PNG') center bottom / cover no-repeat;
-  opacity: 0.12;
-  pointer-events: none;
-  z-index: 0;
-  mask-image: linear-gradient(to bottom, transparent 0%, black 40%);
-  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 40%);
 }
 
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-jakarta);
+  font-family: var(--font-display);
   font-weight: 800;
-  letter-spacing: -0.03em;
-  color: var(--brand-secondary);
-}
-
-.mesh-gradient {
-  background-color: var(--surface-base);
-  background-image: 
-    radial-gradient(at 0% 0%, rgba(231, 111, 81, 0.05) 0px, transparent 50%),
-    radial-gradient(at 100% 0%, rgba(38, 70, 83, 0.05) 0px, transparent 50%),
-    radial-gradient(at 100% 100%, rgba(231, 111, 81, 0.05) 0px, transparent 50%),
-    radial-gradient(at 0% 100%, rgba(38, 70, 83, 0.05) 0px, transparent 50%);
+  letter-spacing: -0.02em;
+  color: var(--clay-text-primary);
 }
 
 .clay-card {
-  background: var(--surface-elevated);
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-clay-external);
+  background: var(--clay-surface-0);
+  border-radius: var(--radius-xl);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-md), var(--clay-inset);
   position: relative;
-  border: 1px solid rgba(255, 255, 255, 0.4);
+  overflow: hidden;
+  transition: transform var(--duration-mid) var(--ease-clay),
+              box-shadow var(--duration-mid) var(--ease-out);
 }
 
-.clay-card::before {
-  content: "";
+.clay-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg), var(--clay-inset);
+}
+
+.clay-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 14px;
+  border: none;
+  border-radius: var(--radius-xl);
+  padding: 12px 24px;
+  cursor: pointer;
+  position: relative;
+  transition: transform var(--duration-fast) var(--ease-clay),
+              box-shadow var(--duration-fast) var(--ease-out);
+  white-space: nowrap;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+  user-select: none;
+}
+
+.clay-btn::after {
+  content: '';
   position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  box-shadow: var(--shadow-clay-internal-1);
+  top: 4px;
+  left: 12px;
+  right: 12px;
+  height: 8px;
+  background: rgba(255,255,255,0.35);
+  border-radius: var(--radius-pill);
   pointer-events: none;
 }
 
-.clay-card::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  box-shadow: var(--shadow-clay-internal-2);
-  pointer-events: none;
+.clay-btn:hover  { transform: translateY(-3px); }
+.clay-btn:active { transform: translateY(1px); }
+
+/* Variants */
+.clay-btn-primary {
+  background: var(--clay-primary);
+  color: #fff;
+  box-shadow: 0 5px 0 var(--clay-primary-deep), 0 8px 20px rgba(74,152,40,0.35);
+}
+.clay-btn-primary:hover {
+  box-shadow: 0 8px 0 var(--clay-primary-deep), 0 14px 28px rgba(74,152,40,0.4);
+}
+.clay-btn-primary:active {
+  box-shadow: 0 2px 0 var(--clay-primary-deep), 0 4px 12px rgba(74,152,40,0.25);
 }
 
-.clay-button {
-  box-shadow: 
-    0 4px 12px rgba(231, 111, 81, 0.2),
-    inset 2px 2px 4px rgba(255, 255, 255, 0.3),
-    inset -2px -2px 4px rgba(0, 0, 0, 0.05);
+.clay-btn-secondary {
+  background: var(--clay-wood-light);
+  color: var(--clay-wood-dark);
+  box-shadow: 0 5px 0 var(--clay-wood-mid), 0 8px 20px rgba(184,136,72,0.3);
 }
 
-.transition-premium {
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+.clay-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 10px;
+  border-radius: var(--radius-pill);
+  letter-spacing: 0.03em;
+  box-shadow: 0 2px 0 rgba(0,0,0,0.12), var(--clay-inset);
 }
 
-.texture-paper {
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
-}
-
-.texture-linen {
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.05'/%3E%3C/svg%3E");
-}
-
-.organic-border {
-  border-radius: var(--radius-lg);
-  border: 1px solid rgba(139, 115, 85, 0.15);
-}
-
-.organic-shadow {
-  box-shadow: 
-    0 4px 20px rgba(44, 36, 22, 0.06),
-    0 1px 3px rgba(44, 36, 22, 0.04);
-}
-
-.organic-shadow-hover {
-  box-shadow: 
-    0 8px 30px rgba(44, 36, 22, 0.1),
-    0 2px 8px rgba(44, 36, 22, 0.06);
-  transition: all 0.3s ease;
-}

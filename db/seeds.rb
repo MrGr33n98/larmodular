@@ -176,7 +176,6 @@ plans_data = [
 plans_data.each do |data|
   Plan.find_or_create_by!(slug: data[:slug]) do |p|
     p.name = data[:name]
-    p.description = data[:description]
     p.price_monthly = data[:price_monthly]
     p.price_yearly = data[:price_yearly]
     p.features = data[:features]

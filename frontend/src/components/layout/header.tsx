@@ -3,9 +3,10 @@
 import Link from 'next/link';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
-import { Menu, X, Home, Building, Package, User, LogOut } from 'lucide-react';
+import { Menu, X, Home, Building, Package, User, LogOut, Compass, Sparkles } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function Header() {
   const { user, logout } = useAuth();
@@ -23,60 +24,73 @@ export function Header() {
   return (
     <header 
       className={cn(
-        "sticky top-0 z-50 transition-premium w-full",
-        scrolled 
-          ? "bg-surface-elevated/80 backdrop-blur-xl shadow-clay-external py-2 border-b border-white/20" 
-          : "bg-transparent py-4"
+        "sticky top-0 z-50 transition-all duration-500 w-full",
+        scrolled ? "py-2" : "py-6"
       )}
     >
       <div className="container mx-auto px-6">
-        <div className="flex items-center justify-between h-16 bg-white/40 backdrop-blur-md rounded-[24px] px-6 border border-white/40 shadow-[inset_0_0_12px_rgba(255,255,255,0.5)]">
+        <div 
+          className={cn(
+            "flex items-center justify-between h-20 transition-all duration-500 rounded-[32px] px-8",
+            scrolled 
+              ? "bg-white/70 backdrop-blur-2xl shadow-2xl border-none" 
+              : "bg-white/40 backdrop-blur-md shadow-clay-flat border border-white/40"
+          )}
+        >
           <Link href="/" className="flex items-center space-x-3 group">
-            <div className="w-10 h-10 bg-brand-primary rounded-2xl flex items-center justify-center clay-button transition-premium group-hover:rotate-6">
-              <span className="text-white font-jakarta font-extrabold text-xl">L</span>
+            <div className="w-12 h-12 bg-clay-primary rounded-2xl flex items-center justify-center shadow-clay-flat transition-transform group-hover:rotate-6 group-active:scale-95">
+              <Sparkles className="text-white w-6 h-6" />
             </div>
-            <span className="font-jakarta font-extrabold text-2xl text-brand-secondary tracking-tighter">
-              LAR<span className="text-brand-primary">Modular</span>
+            <span className="font-display font-black text-2xl text-clay-text-primary tracking-tighter">
+              LAR<span className="text-clay-primary">Modular</span>
             </span>
           </Link>
 
-          <nav className="hidden md:flex items-center space-x-8">
-            {['Início', 'Buscar', 'Categorias', 'Empresas'].map((item) => (
+          <nav className="hidden md:flex items-center space-x-10">
+            {[
+              { label: 'Início', href: '/', icon: Home },
+              { label: 'Buscar', href: '/busca', icon: Package },
+              { label: 'Empresas', href: '/empresas', icon: Building }
+            ].map((item) => (
               <Link
-                key={item}
-                href={item === 'Início' ? '/' : `/${item.toLowerCase()}`}
-                className="text-brand-secondary/70 hover:text-brand-primary transition-premium text-sm font-bold tracking-tight relative group"
+                key={item.label}
+                href={item.href}
+                className="text-clay-text-muted hover:text-clay-primary transition-colors text-xs font-black uppercase tracking-widest relative group flex items-center gap-2"
               >
-                {item}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-brand-primary transition-all group-hover:w-full rounded-full" />
+                <item.icon className="w-4 h-4 opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                <span>{item.label}</span>
+                <span className="absolute -bottom-2 left-0 w-0 h-1 bg-clay-primary transition-all group-hover:w-full rounded-full" />
               </Link>
             ))}
           </nav>
 
-          <div className="hidden md:flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-6">
             {user ? (
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-4">
                 <Link href="/dashboard">
-                  <Button variant="clay" size="sm">
+                  <Button variant="clay" size="sm" className="px-6 h-11 rounded-xl">
                     <User className="w-4 h-4 mr-2" />
                     Meu Painel
                   </Button>
                 </Link>
-                <Button variant="ghost" size="sm" onClick={logout} className="text-red-500 hover:bg-red-50">
-                  <LogOut className="w-4 h-4 mr-2" />
-                  Sair
-                </Button>
+                <button 
+                  onClick={logout} 
+                  className="w-11 h-11 rounded-xl bg-red-50 flex items-center justify-center text-red-500 hover:bg-red-500 hover:text-white transition-all shadow-sm"
+                  title="Sair"
+                >
+                  <LogOut className="w-5 h-5" />
+                </button>
               </div>
             ) : (
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-4">
                 <Link href="/login">
-                  <Button variant="ghost" size="sm" className="font-bold text-brand-secondary">
+                  <Button variant="ghost" className="font-black text-xs uppercase tracking-widest text-clay-text-muted">
                     Entrar
                   </Button>
                 </Link>
                 <Link href="/cadastro">
-                  <Button size="sm" className="rounded-xl">
-                    Começar Agora
+                  <Button className="h-12 px-8 rounded-xl shadow-xl hover:shadow-2xl">
+                    Começar
                   </Button>
                 </Link>
               </div>
@@ -84,7 +98,7 @@ export function Header() {
           </div>
 
           <button
-            className="md:hidden p-2 text-brand-secondary hover:bg-brand-primary/5 rounded-xl transition-premium"
+            className="md:hidden w-12 h-12 flex items-center justify-center bg-clay-surface-2 rounded-2xl text-clay-text-primary hover:bg-clay-primary hover:text-white transition-all shadow-clay-flat"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? (
@@ -97,77 +111,81 @@ export function Header() {
       </div>
 
       {/* Mobile Menu */}
-      <div
-        className={cn(
-          'md:hidden absolute top-full left-0 w-full p-4 transition-premium',
-          mobileMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none'
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="md:hidden absolute top-full left-0 w-full p-6 z-50"
+          >
+            <div className="clay-card p-8 bg-white/95 backdrop-blur-2xl shadow-2xl border-none space-y-6">
+              <Link
+                href="/"
+                className="flex items-center space-x-4 text-clay-text-primary font-display font-black text-lg p-4 bg-clay-surface-2/30 rounded-2xl transition-all"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Home className="w-6 h-6 text-clay-primary" />
+                <span>Início</span>
+              </Link>
+              <Link
+                href="/busca"
+                className="flex items-center space-x-4 text-clay-text-primary font-display font-black text-lg p-4 bg-clay-surface-2/30 rounded-2xl transition-all"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Package className="w-6 h-6 text-clay-primary" />
+                <span>Buscar</span>
+              </Link>
+              <Link
+                href="/empresas"
+                className="flex items-center space-x-4 text-clay-text-primary font-display font-black text-lg p-4 bg-clay-surface-2/30 rounded-2xl transition-all"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Building className="w-6 h-6 text-clay-primary" />
+                <span>Empresas</span>
+              </Link>
+              
+              <div className="pt-6 border-t border-clay-surface-2">
+                {user ? (
+                  <div className="space-y-4">
+                    <Link
+                      href="/dashboard"
+                      className="flex items-center space-x-4 text-clay-text-primary font-display font-black text-lg p-4 bg-clay-surface-2/30 rounded-2xl transition-all"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <User className="w-6 h-6 text-clay-primary" />
+                      <span>Meu Painel</span>
+                    </Link>
+                    <button
+                      onClick={() => {
+                        logout();
+                        setMobileMenuOpen(false);
+                      }}
+                      className="flex items-center space-x-4 text-red-500 font-display font-black text-lg p-4 bg-red-50 rounded-2xl transition-all w-full text-left"
+                    >
+                      <LogOut className="w-6 h-6" />
+                      <span>Sair da Conta</span>
+                    </button>
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-4">
+                    <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                      <Button variant="ghost" className="w-full h-14 rounded-2xl text-lg font-display font-black">
+                        Entrar
+                      </Button>
+                    </Link>
+                    <Link href="/cadastro" onClick={() => setMobileMenuOpen(false)}>
+                      <Button className="w-full h-14 rounded-2xl text-lg font-display font-black shadow-xl">
+                        Cadastrar Agora
+                      </Button>
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </div>
+          </motion.div>
         )}
-      >
-        <div className="bg-surface-elevated/95 backdrop-blur-2xl rounded-[32px] p-6 shadow-clay-external border border-white/40 space-y-4">
-          <Link
-            href="/"
-            className="flex items-center space-x-3 text-brand-secondary font-bold py-3 px-4 hover:bg-brand-primary/5 rounded-2xl transition-premium"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            <Home className="w-5 h-5 text-brand-primary" />
-            <span>Início</span>
-          </Link>
-          <Link
-            href="/busca"
-            className="flex items-center space-x-3 text-brand-secondary font-bold py-3 px-4 hover:bg-brand-primary/5 rounded-2xl transition-premium"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            <Package className="w-5 h-5 text-brand-primary" />
-            <span>Buscar</span>
-          </Link>
-          <Link
-            href="/empresas"
-            className="flex items-center space-x-3 text-brand-secondary font-bold py-3 px-4 hover:bg-brand-primary/5 rounded-2xl transition-premium"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            <Building className="w-5 h-5 text-brand-primary" />
-            <span>Empresas</span>
-          </Link>
-          
-          <div className="pt-4 border-t border-brand-secondary/5">
-            {user ? (
-              <div className="space-y-3">
-                <Link
-                  href="/dashboard"
-                  className="flex items-center space-x-3 text-brand-secondary font-bold py-3 px-4 hover:bg-brand-primary/5 rounded-2xl transition-premium"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  <User className="w-5 h-5 text-brand-primary" />
-                  <span>Meu Painel</span>
-                </Link>
-                <button
-                  onClick={() => {
-                    logout();
-                    setMobileMenuOpen(false);
-                  }}
-                  className="flex items-center space-x-3 text-red-500 font-bold py-3 px-4 hover:bg-red-50 rounded-2xl transition-premium w-full text-left"
-                >
-                  <LogOut className="w-5 h-5" />
-                  <span>Sair da Conta</span>
-                </button>
-              </div>
-            ) : (
-              <div className="flex flex-col gap-3">
-                <Link href="/login" className="w-full">
-                  <Button variant="outline" className="w-full rounded-2xl">
-                    Entrar
-                  </Button>
-                </Link>
-                <Link href="/cadastro" className="w-full">
-                  <Button className="w-full rounded-2xl shadow-clay-external">
-                    Cadastrar Gratuitamente
-                  </Button>
-                </Link>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
+      </AnimatePresence>
     </header>
   );
 }

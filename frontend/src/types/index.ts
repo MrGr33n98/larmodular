@@ -62,7 +62,8 @@ export interface Product {
   name: string;
   slug: string;
   description?: string;
-  base_price?: number;
+  short_description?: string;
+  base_price: number;
   price_with_discount?: number;
   images?: string[];
   specifications?: Record<string, unknown>;
@@ -77,6 +78,12 @@ export interface Product {
   category_name?: string;
   company_name?: string;
   company_logo?: string;
+  location?: string;
+  area_m2?: number;
+  bedrooms?: number;
+  bathrooms?: number;
+  warranty_months?: number;
+  lead_time_days?: number;
   average_rating?: number;
   reviews_count?: number;
   views_count?: number;

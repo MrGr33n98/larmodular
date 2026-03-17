@@ -2,24 +2,19 @@
 
 import { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import Link from 'next/link';
 import { api } from '@/lib/api';
-import { Product, Category, Company } from '@/types';
+import { Product, Category } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
-import { formatPrice } from '@/lib/utils';
-import { Pagination, LoadMore } from '@/components/ui/pagination';
-import { Search, Filter, Star, Package, Grid, List } from 'lucide-react';
-
-const clayShadow = '0 10px 30px -12px rgba(0, 0, 0, 0.1), inset 0 2px 4px rgba(255, 255, 255, 1), inset 0 -2px 4px rgba(0, 0, 0, 0.05)';
-const inputInnerShadow = 'inset 2px 2px 5px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.02)';
+import { ProductCard } from '@/components/marketplace/ProductCard';
+import { LoadMore } from '@/components/ui/pagination';
+import { Search, Filter, Package, Grid, List, SlidersHorizontal } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 function SearchContent() {
   const searchParams = useSearchParams();
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
-  const [companies, setCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
   const [cursor, setCursor] = useState<string | null>(null);
   const [hasMore, setHasMore] = useState<boolean>(true);
@@ -76,18 +71,14 @@ function SearchContent() {
         const res = await api.get<{ data: Product[]; meta?: any }>(`/products?${params.toString()}`);
         const data = res.data.data || [];
         setProducts(data);
+        
         if (res.data.meta?.next_cursor) {
           setCursor(res.data.meta.next_cursor);
-          setHasMore(true);
-        } else if (data.length === perPage && data.length > 0) {
-          // Fallback: use last id as cursor for next page
-          setCursor(String(data[data.length - 1].id));
           setHasMore(true);
         } else {
           setHasMore(false);
         }
 
-        // Keep existing pagination info if available (for backward compatibility)
         if (res.data.meta?.pagination) {
           setPagination({
             currentPage: res.data.meta.pagination.current_page || currentPage,
@@ -136,197 +127,207 @@ function SearchContent() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 bg-background min-h-screen">
-      {/* Search / Filter Bar */}
-      <div
-        className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/80 p-6 mb-8 transition-premium"
-        style={{ boxShadow: clayShadow }}
-      >
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="flex-1">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Buscar produtos..."
-                value={filters.q}
-                onChange={(e) => handleFilterChange('q', e.target.value)}
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white/80 transition-all duration-300"
-                style={{ boxShadow: inputInnerShadow }}
-              />
-            </div>
-          </div>
-          <div className="flex gap-2">
-            <select
-              value={filters.categoria}
-              onChange={(e) => handleFilterChange('categoria', e.target.value)}
-              className="px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-emerald-500 bg-white/80 transition-all duration-300"
-              style={{ boxShadow: inputInnerShadow }}
-            >
-              <option value="">Todas as Categorias</option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={String(cat.id)}>{cat.name}</option>
-              ))}
-            </select>
-            <Button variant="outline" className="rounded-xl border-gray-200 hover:-translate-y-0.5 transition-all duration-300">
-              <Filter className="w-4 h-4 mr-2" />
-              Mais Filtros
-            </Button>
-          </div>
-        </div>
+    <div className="container mx-auto px-4 py-12">
+      {/* Search Header */}
+      <div className="mb-12 text-center">
+        <h1 className="text-4xl md:text-5xl font-display font-black text-clay-text-primary mb-4 leading-tight">
+          Encontre seu <span className="text-clay-grass-deep">Lar Modular</span>
+        </h1>
+        <p className="text-lg text-clay-text-secondary max-w-2xl mx-auto font-body">
+          Explore as melhores opções de Tiny Houses, Containers e Moradias Modulares do Brasil.
+        </p>
+      </div>
 
-        <div className="flex flex-wrap gap-2 mt-4">
-          <button
-            onClick={() => handleFilterChange('destaque', !filters.destaque)}
-            className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-              filters.destaque
-                ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md'
-                : 'bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-150'
-            }`}
+      {/* Main Search Bar */}
+      <div className="clay-card p-4 md:p-6 mb-12 max-w-4xl mx-auto">
+        <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex-1 relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-clay-text-muted transition-colors group-focus-within:text-clay-primary" />
+            <input
+              type="text"
+              placeholder="Ex: Tiny House de Luxo, Container 40 pés..."
+              value={filters.q}
+              onChange={(e) => handleFilterChange('q', e.target.value)}
+              className="w-full pl-12 pr-4 py-4 rounded-2xl bg-clay-surface-2/30 border-none shadow-[inset_0_2px_4px_rgba(0,0,0,0.05)] focus:ring-2 focus:ring-clay-primary font-body text-clay-text-primary placeholder:text-clay-text-muted transition-all"
+            />
+          </div>
+          <select
+            value={filters.categoria}
+            onChange={(e) => handleFilterChange('categoria', e.target.value)}
+            className="px-6 py-4 rounded-2xl bg-clay-surface-2/30 border-none shadow-[inset_0_2px_4px_rgba(0,0,0,0.05)] focus:ring-2 focus:ring-clay-primary font-display font-bold text-clay-text-primary appearance-none cursor-pointer transition-all min-w-[200px]"
           >
-            Destaques
-          </button>
+            <option value="">Todas Categorias</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={String(cat.id)}>{cat.name}</option>
+            ))}
+          </select>
+          <Button variant="default" className="md:w-32 py-4 h-auto shadow-lg hover:shadow-xl">
+            Buscar
+          </Button>
         </div>
       </div>
 
-      <div className="flex gap-8">
+      <div className="flex flex-col lg:flex-row gap-10">
         {/* Sidebar Filters */}
-        <div className="w-64 flex-shrink-0 hidden lg:block">
-          <div
-            className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/80 p-4 transition-premium"
-            style={{ boxShadow: clayShadow }}
-          >
-            <h3 className="font-semibold text-gray-900 mb-4">Preco</h3>
-            <div className="space-y-2">
-              <Input
-                placeholder="Min"
-                type="number"
-                value={filters.precoMin}
-                onChange={(e) => handleFilterChange('precoMin', e.target.value)}
-                className="rounded-xl bg-white/80"
-                style={{ boxShadow: inputInnerShadow }}
-              />
-              <Input
-                placeholder="Max"
-                type="number"
-                value={filters.precoMax}
-                onChange={(e) => handleFilterChange('precoMax', e.target.value)}
-                className="rounded-xl bg-white/80"
-                style={{ boxShadow: inputInnerShadow }}
-              />
+        <aside className="w-full lg:w-72 flex-shrink-0">
+          <div className="clay-card sticky top-24 space-y-8">
+            <div className="flex items-center gap-2 mb-2 pb-4 border-b-2 border-clay-surface-2">
+              <SlidersHorizontal className="w-5 h-5 text-clay-primary" />
+              <h2 className="text-xl font-display font-black text-clay-text-primary">Filtros</h2>
             </div>
 
-            <h3 className="font-semibold text-gray-900 mt-6 mb-4">Categorias</h3>
-            <div className="flex flex-wrap gap-2">
-              <button
-                onClick={() => handleFilterChange('categoria', '')}
-                className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-300 ${
-                  filters.categoria === ''
-                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md'
-                    : 'bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-150'
-                }`}
-              >
-                Todas
-              </button>
-              {categories.slice(0, 6).map((cat) => (
+            {/* Price Range */}
+            <div className="space-y-4">
+              <h3 className="font-display font-extrabold text-clay-text-primary text-sm uppercase tracking-wider">Faixa de Preço</h3>
+              <div className="flex items-center gap-3">
+                <input
+                  type="number"
+                  placeholder="Min"
+                  value={filters.precoMin}
+                  onChange={(e) => handleFilterChange('precoMin', e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl bg-clay-surface-2/50 border-none shadow-[inset_0_1px_2px_rgba(0,0,0,0.05)] focus:ring-2 focus:ring-clay-primary text-sm font-bold"
+                />
+                <span className="text-clay-text-muted font-bold">-</span>
+                <input
+                  type="number"
+                  placeholder="Max"
+                  value={filters.precoMax}
+                  onChange={(e) => handleFilterChange('precoMax', e.target.value)}
+                  className="w-full px-4 py-3 rounded-xl bg-clay-surface-2/50 border-none shadow-[inset_0_1px_2px_rgba(0,0,0,0.05)] focus:ring-2 focus:ring-clay-primary text-sm font-bold"
+                />
+              </div>
+            </div>
+
+            {/* Quick Filters */}
+            <div className="space-y-4">
+              <h3 className="font-display font-extrabold text-clay-text-primary text-sm uppercase tracking-wider">Opções</h3>
+              <div className="flex flex-wrap gap-2">
                 <button
-                  key={cat.id}
-                  onClick={() => handleFilterChange('categoria', String(cat.id))}
-                  className={`px-3 py-1.5 rounded-full text-sm font-medium transition-all duration-300 ${
-                    filters.categoria === String(cat.id)
-                      ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md'
-                      : 'bg-gray-100 text-gray-600 border border-gray-200 hover:bg-gray-150'
+                  onClick={() => handleFilterChange('destaque', !filters.destaque)}
+                  className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${
+                    filters.destaque
+                      ? 'bg-clay-primary text-white shadow-sm scale-105'
+                      : 'bg-clay-surface-2 text-clay-text-secondary hover:bg-clay-surface-3'
                   }`}
                 >
-                  {cat.name}
+                  Destaques
                 </button>
-              ))}
+              </div>
             </div>
-          </div>
-        </div>
 
-        {/* Product Grid */}
+            <Button 
+              variant="outline" 
+              className="w-full py-3 h-auto"
+              onClick={() => setFilters({
+                q: '',
+                categoria: '',
+                regiao: '',
+                destaque: false,
+                precoMin: '',
+                precoMax: '',
+              })}
+            >
+              Limpar Filtros
+            </Button>
+          </div>
+        </aside>
+
+        {/* Product Grid Content */}
         <div className="flex-1">
-          <div className="flex items-center justify-between mb-6">
-            <p className="text-gray-600">
-              {loading ? 'Carregando...' : `${pagination.totalCount} produtos encontrados`}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+            <p className="text-clay-text-secondary font-body font-medium">
+              {loading ? (
+                <span className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-clay-primary animate-ping" />
+                  Buscando...
+                </span>
+              ) : (
+                <>Mostrando <span className="text-clay-text-primary font-bold">{pagination.totalCount}</span> resultados</>
+              )}
             </p>
-            <div className="flex items-center gap-1 bg-white/80 rounded-xl p-1" style={{ boxShadow: inputInnerShadow }}>
+            
+            <div className="flex items-center gap-2 bg-clay-surface-2/40 p-1.5 rounded-2xl shadow-[inset_0_2px_4px_rgba(0,0,0,0.03)] border border-white/50">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-lg transition-all duration-300 ${viewMode === 'grid' ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md' : 'text-gray-400 hover:text-gray-600'}`}
+                className={`p-2 rounded-xl transition-all ${viewMode === 'grid' ? 'bg-white shadow-md text-clay-primary' : 'text-clay-text-muted hover:text-clay-text-secondary'}`}
               >
                 <Grid className="w-5 h-5" />
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-2 rounded-lg transition-all duration-300 ${viewMode === 'list' ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-md' : 'text-gray-400 hover:text-gray-600'}`}
+                className={`p-2 rounded-xl transition-all ${viewMode === 'list' ? 'bg-white shadow-md text-clay-primary' : 'text-clay-text-muted hover:text-clay-text-secondary'}`}
               >
                 <List className="w-5 h-5" />
               </button>
             </div>
           </div>
 
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {Array.from({ length: 9 }).map((_, i) => (
-                <div key={i} className="bg-white/60 rounded-2xl h-80 animate-pulse" style={{ boxShadow: clayShadow }} />
-              ))}
-            </div>
-          ) : products.length > 0 ? (
-            <>
-              <div className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
-                {products.map((product) => (
-                  <Link key={product.id} href={`/produto/${product.slug}`}>
-                    <div
-                      className="bg-white rounded-2xl border border-white/80 overflow-hidden hover:-translate-y-1 transition-all duration-300 cursor-pointer"
-                      style={{ boxShadow: clayShadow }}
-                    >
-                      <div className={`${viewMode === 'grid' ? 'aspect-video' : 'flex'} bg-gray-100 relative`}>
-                        {product.images?.[0] ? (
-                          <img src={product.images[0]} alt={product.name} className="object-cover w-full h-full" />
-                        ) : (
-                          <div className="flex items-center justify-center h-full w-full">
-                            <Package className="w-12 h-12 text-gray-300" />
-                          </div>
-                        )}
-                        {product.featured && (
-                          <span className="absolute top-3 left-3 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs font-medium px-3 py-1 rounded-full shadow-md">
-                            Destaque
-                          </span>
-                        )}
-                      </div>
-                      <div className="p-4">
-                        <p className="text-sm text-gray-400 mb-1">{product.category_name}</p>
-                        <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{product.name}</h3>
-                        <p className="text-sm text-gray-500 mb-2">{product.company_name}</p>
-                        <div className="flex items-center justify-between">
-                          <span className="text-lg text-emerald-600 font-bold">{formatPrice(product.base_price)}</span>
-                          {product.average_rating && (
-                            <div className="flex items-center text-sm text-gray-500">
-                              <Star className="w-4 h-4 text-yellow-400 fill-yellow-400 mr-1" />
-                              {product.average_rating}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
+          <AnimatePresence mode="wait">
+            {loading && products.length === 0 ? (
+              <motion.div 
+                key="loading"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8"
+              >
+                {Array.from({ length: 9 }).map((_, i) => (
+                  <div key={i} className="clay-card h-96 bg-clay-surface-2/30 animate-pulse border-none shadow-none" />
                 ))}
-              </div>
+              </motion.div>
+            ) : products.length > 0 ? (
+              <motion.div 
+                key="content"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`grid gap-8 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 xl:grid-cols-3' : 'grid-cols-1'}`}
+              >
+                {products.map((product) => (
+                  <ProductCard
+                    key={product.id}
+                    id={product.id}
+                    name={product.name}
+                    slug={product.slug}
+                    basePrice={product.base_price}
+                    imageUrl={product.images?.[0] || '/placeholder.jpg'}
+                    location={product.location || 'Brasil'}
+                    area={product.area_m2 || 0}
+                    bedrooms={product.bedrooms || 0}
+                    isVerified={product.featured}
+                  />
+                ))}
+              </motion.div>
+            ) : (
+              <motion.div 
+                key="empty"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-center py-24 clay-card bg-clay-surface-2/20 border-none"
+              >
+                <Package className="w-20 h-20 text-clay-text-muted/30 mx-auto mb-6" />
+                <h3 className="text-2xl font-display font-black text-clay-text-primary mb-2">Nenhum lar modular encontrado</h3>
+                <p className="text-clay-text-secondary">Tente ajustar seus filtros ou use termos diferentes na busca.</p>
+                <Button 
+                  variant="clay" 
+                  className="mt-8"
+                  onClick={() => setFilters({
+                    q: '',
+                    categoria: '',
+                    regiao: '',
+                    destaque: false,
+                    precoMin: '',
+                    precoMax: '',
+                  })}
+                >
+                  Recomeçar Busca
+                </Button>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-              {hasMore && (
-                <LoadMore onLoadMore={handleLoadMore} isLoading={loading} hasMore={hasMore} />
-              )}
-            </>
-          ) : (
-            <div
-              className="text-center py-12 bg-white/90 backdrop-blur-sm rounded-2xl border border-white/80"
-              style={{ boxShadow: clayShadow }}
-            >
-              <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">Nenhum produto encontrado</h3>
-              <p className="text-gray-500">Tente ajustar seus filtros de busca</p>
+          {hasMore && (
+            <div className="mt-16 flex justify-center">
+              <LoadMore onLoadMore={handleLoadMore} isLoading={loading} hasMore={hasMore} />
             </div>
           )}
         </div>
@@ -338,10 +339,11 @@ function SearchContent() {
 export default function SearchPage() {
   return (
     <Suspense fallback={
-      <div className="container mx-auto px-4 py-8 bg-background min-h-screen">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {Array.from({ length: 9 }).map((_, i) => (
-            <div key={i} className="bg-white/60 rounded-2xl h-80 animate-pulse" style={{ boxShadow: '0 10px 30px -12px rgba(0, 0, 0, 0.1), inset 0 2px 4px rgba(255, 255, 255, 1), inset 0 -2px 4px rgba(0, 0, 0, 0.05)' }} />
+      <div className="container mx-auto px-4 py-12 animate-pulse">
+        <div className="h-12 w-2/3 bg-clay-surface-2 rounded-2xl mx-auto mb-8" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i} className="clay-card h-80 bg-clay-surface-2/30 shadow-none border-none" />
           ))}
         </div>
       </div>

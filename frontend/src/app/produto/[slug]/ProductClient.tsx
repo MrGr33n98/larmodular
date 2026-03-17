@@ -14,7 +14,10 @@ import { formatPrice, formatDate } from '@/lib/utils';
 import {
   Star, Heart, Share2, MessageCircle, MapPin,
   ChevronLeft, ChevronRight, Check, Package, Shield, Truck, X,
+  Maximize, BedDouble, Bath, Calendar, Award, SlidersHorizontal
 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ProductCard } from '@/components/marketplace/ProductCard';
 
 // ── Quote form schema ──────────────────────────────────────────────
 const quoteSchema = z.object({
@@ -87,117 +90,97 @@ function QuoteModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)' }}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-clay-text-primary/20 backdrop-blur-md"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div
-        className="relative w-full max-w-lg rounded-3xl overflow-hidden"
-        style={{
-          background: 'rgba(255,255,255,0.95)',
-          boxShadow: '0 24px 64px rgba(0,0,0,0.18), 0 8px 24px rgba(0,0,0,0.1)',
-        }}
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0, y: 20 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        className="clay-card relative w-full max-w-xl p-0 overflow-hidden border-none"
       >
         {/* Header */}
-        <div className="px-7 pt-7 pb-4 flex items-start justify-between">
+        <div className="p-8 pb-4 flex items-start justify-between">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Solicitar Orçamento</h2>
-            <p className="text-sm text-gray-500 mt-0.5 line-clamp-1">{product.name}</p>
+            <h2 className="text-2xl font-display font-black text-clay-text-primary">Solicitar Orçamento</h2>
+            <p className="text-sm text-clay-text-secondary mt-1 font-body">{product.name}</p>
           </div>
           <button
             onClick={onClose}
-            className="ml-4 p-2 rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
-            aria-label="Fechar"
+            className="p-2 rounded-full bg-clay-surface-2 text-clay-text-muted hover:text-clay-text-primary transition-colors shadow-sm"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="px-7 pb-7 space-y-4">
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Nome *</label>
-              <Input {...register('name')} placeholder="Seu nome completo" />
-              {errors.name && (
-                <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>
-              )}
+        <form onSubmit={handleSubmit(onSubmit)} className="p-8 pt-4 space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="space-y-2">
+              <label className="block text-sm font-display font-bold text-clay-text-primary ml-1">Nome Completo</label>
+              <Input 
+                {...register('name')} 
+                placeholder="Seu nome" 
+                className="bg-clay-surface-2/50 border-none shadow-[inset_0_2px_4px_rgba(0,0,0,0.05)] rounded-2xl h-12"
+              />
+              {errors.name && <p className="text-xs text-red-500 font-bold ml-1">{errors.name.message}</p>}
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Telefone *</label>
-              <Input {...register('phone')} placeholder="(11) 99999-9999" type="tel" />
-              {errors.phone && (
-                <p className="text-xs text-red-500 mt-1">{errors.phone.message}</p>
-              )}
+            <div className="space-y-2">
+              <label className="block text-sm font-display font-bold text-clay-text-primary ml-1">Telefone / WhatsApp</label>
+              <Input 
+                {...register('phone')} 
+                placeholder="(00) 00000-0000" 
+                className="bg-clay-surface-2/50 border-none shadow-[inset_0_2px_4px_rgba(0,0,0,0.05)] rounded-2xl h-12"
+              />
+              {errors.phone && <p className="text-xs text-red-500 font-bold ml-1">{errors.phone.message}</p>}
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">E-mail *</label>
-            <Input {...register('email')} placeholder="seu@email.com" type="email" />
-            {errors.email && (
-              <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>
-            )}
+          <div className="space-y-2">
+            <label className="block text-sm font-display font-bold text-clay-text-primary ml-1">E-mail</label>
+            <Input 
+              {...register('email')} 
+              placeholder="seu@email.com" 
+              className="bg-clay-surface-2/50 border-none shadow-[inset_0_2px_4px_rgba(0,0,0,0.05)] rounded-2xl h-12"
+            />
+            {errors.email && <p className="text-xs text-red-500 font-bold ml-1">{errors.email.message}</p>}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Mensagem *</label>
+          <div className="space-y-2">
+            <label className="block text-sm font-display font-bold text-clay-text-primary ml-1">Mensagem</label>
             <textarea
               {...register('message')}
               rows={3}
-              placeholder="Descreva suas necessidades, localidade, personalização..."
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none"
+              placeholder="Descreva suas necessidades..."
+              className="w-full px-4 py-3 bg-clay-surface-2/50 border-none shadow-[inset_0_2px_4px_rgba(0,0,0,0.05)] rounded-2xl focus:ring-2 focus:ring-clay-primary font-body text-clay-text-primary resize-none"
             />
-            {errors.message && (
-              <p className="text-xs text-red-500 mt-1">{errors.message.message}</p>
-            )}
+            {errors.message && <p className="text-xs text-red-500 font-bold ml-1">{errors.message.message}</p>}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Orçamento mín. (R$)</label>
-              <Input {...register('budget_min')} placeholder="50.000" type="number" min="0" />
+            <div className="space-y-2">
+              <label className="block text-sm font-display font-bold text-clay-text-primary ml-1">Prazo Desejado</label>
+              <select
+                {...register('timeline')}
+                className="w-full px-4 py-3 bg-clay-surface-2/50 border-none shadow-[inset_0_2px_4px_rgba(0,0,0,0.05)] rounded-2xl focus:ring-2 focus:ring-clay-primary font-body text-clay-text-primary appearance-none h-12"
+              >
+                <option value="">Selecione...</option>
+                <option value="1_month">Até 1 mês</option>
+                <option value="3_months">1 a 3 meses</option>
+                <option value="6_months">3 a 6 meses</option>
+                <option value="flexible">Flexível</option>
+              </select>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Orçamento máx. (R$)</label>
-              <Input {...register('budget_max')} placeholder="200.000" type="number" min="0" />
+            <div className="flex items-end">
+              <Button
+                type="submit"
+                className="w-full h-12 shadow-lg hover:shadow-xl"
+                disabled={submitting}
+              >
+                {submitting ? 'Enviando...' : 'Enviar Agora'}
+              </Button>
             </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Prazo desejado</label>
-            <select
-              {...register('timeline')}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-            >
-              <option value="">Selecione</option>
-              <option value="1_month">Até 1 mês</option>
-              <option value="3_months">1 a 3 meses</option>
-              <option value="6_months">3 a 6 meses</option>
-              <option value="12_months">6 a 12 meses</option>
-              <option value="flexible">Flexível</option>
-            </select>
-          </div>
-
-          <div className="pt-2 flex gap-3">
-            <Button
-              type="button"
-              variant="outline"
-              className="flex-1"
-              onClick={onClose}
-              disabled={submitting}
-            >
-              Cancelar
-            </Button>
-            <Button
-              type="submit"
-              className="flex-1"
-              disabled={submitting}
-            >
-              {submitting ? 'Enviando...' : 'Enviar Orçamento'}
-            </Button>
           </div>
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 }
@@ -249,36 +232,13 @@ export default function ProductClient({ slug }: { slug: string }) {
     }
   };
 
-  const jsonLd = product ? {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "name": product.name,
-    "description": product.description,
-    "image": product.images,
-    "offers": {
-      "@type": "Offer",
-      "price": product.base_price,
-      "priceCurrency": "BRL",
-      "availability": product.active ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-    },
-    "aggregateRating": product.average_rating ? {
-      "@type": "AggregateRating",
-      "ratingValue": product.average_rating,
-      "reviewCount": product.reviews_count || 0,
-    } : undefined,
-    "seller": product.company_name ? {
-      "@type": "Organization",
-      "name": product.company_name,
-    } : undefined,
-  } : null;
-
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="animate-pulse">
-          <div className="h-96 bg-gray-200 rounded-xl mb-8" />
-          <div className="h-8 bg-gray-200 rounded w-2/3 mb-4" />
-          <div className="h-6 bg-gray-200 rounded w-1/3" />
+      <div className="container mx-auto px-4 py-12">
+        <div className="animate-pulse space-y-8">
+          <div className="h-96 bg-clay-surface-2/30 rounded-[32px]" />
+          <div className="w-2/3 h-10 bg-clay-surface-2/30 rounded-xl" />
+          <div className="w-1/3 h-6 bg-clay-surface-2/30 rounded-xl" />
         </div>
       </div>
     );
@@ -286,13 +246,15 @@ export default function ProductClient({ slug }: { slug: string }) {
 
   if (!product) {
     return (
-      <div className="container mx-auto px-4 py-16 text-center">
-        <Package className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Produto não encontrado</h1>
-        <p className="text-gray-500 mb-6">O produto que você procura não existe ou foi removido.</p>
-        <Link href="/busca">
-          <Button>Buscar Produtos</Button>
-        </Link>
+      <div className="container mx-auto px-4 py-24 text-center">
+        <div className="clay-card max-w-md mx-auto py-16">
+          <Package className="w-20 h-20 text-clay-text-muted/30 mx-auto mb-6" />
+          <h1 className="text-3xl font-display font-black text-clay-text-primary mb-4">Produto não encontrado</h1>
+          <p className="text-clay-text-secondary mb-8 font-body">Este item pode ter sido removido ou o link está incorreto.</p>
+          <Link href="/busca">
+            <Button variant="clay">Voltar para busca</Button>
+          </Link>
+        </div>
       </div>
     );
   }
@@ -300,246 +262,331 @@ export default function ProductClient({ slug }: { slug: string }) {
   const images = product.images?.length ? product.images : ['/placeholder.jpg'];
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {jsonLd && (
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-      )}
-
-      <nav className="flex items-center text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
-        <Link href="/" className="hover:text-emerald-600">Início</Link>
+    <div className="container mx-auto px-4 py-12">
+      {/* Breadcrumb */}
+      <nav className="flex items-center text-sm font-body font-bold text-clay-text-muted mb-8" aria-label="Breadcrumb">
+        <Link href="/" className="hover:text-clay-primary transition-colors">Início</Link>
         <ChevronRight className="w-4 h-4 mx-2" />
-        <Link href="/busca" className="hover:text-emerald-600">Produtos</Link>
+        <Link href="/busca" className="hover:text-clay-primary transition-colors">Produtos</Link>
         <ChevronRight className="w-4 h-4 mx-2" />
-        <Link href={`/busca?categoria=${product.category_id}`} className="hover:text-emerald-600">
-          {product.category_name}
-        </Link>
-        <ChevronRight className="w-4 h-4 mx-2" />
-        <span className="text-gray-900 truncate">{product.name}</span>
+        <span className="text-clay-text-primary truncate">{product.name}</span>
       </nav>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
-        {/* Images */}
-        <div>
-          <div className="aspect-square bg-gray-100 rounded-3xl overflow-hidden mb-4 relative"
-               style={{ boxShadow: '0 10px 30px -12px rgba(0, 0, 0, 0.1), inset 0 2px 4px rgba(255, 255, 255, 1), inset 0 -2px 4px rgba(0, 0, 0, 0.05)' }}>
-            <img
-              src={images[currentImage]}
-              alt={product.name}
-              className="w-full h-full object-cover"
-            />
-            {product.featured && (
-              <span className="absolute top-4 left-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-sm font-medium px-4 py-1.5 rounded-full shadow-lg">
-                Destaque
-              </span>
-            )}
-            <button
-              onClick={() => setCurrentImage((prev) => (prev > 0 ? prev - 1 : images.length - 1))}
-              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm p-2 rounded-full shadow"
-              aria-label="Imagem anterior"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => setCurrentImage((prev) => (prev < images.length - 1 ? prev + 1 : 0))}
-              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm p-2 rounded-full shadow"
-              aria-label="Próxima imagem"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </button>
-          </div>
-          <div className="flex gap-2 overflow-x-auto">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20">
+        {/* Images Selection */}
+        <div className="space-y-6">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="clay-card p-4 aspect-square relative group bg-white border-none shadow-xl"
+          >
+            <div className="w-full h-full rounded-[24px] overflow-hidden relative shadow-[inset_0_2px_10px_rgba(0,0,0,0.05)] border-4 border-clay-surface-2/30">
+              <img
+                src={images[currentImage]}
+                alt={product.name}
+                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+              />
+              {product.featured && (
+                <div className="absolute top-4 left-4 bg-clay-primary text-white text-xs font-black px-4 py-2 rounded-full shadow-lg uppercase tracking-widest">
+                  Edição Limitada
+                </div>
+              )}
+            </div>
+            
+            <div className="absolute inset-x-8 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+              <button
+                onClick={() => setCurrentImage((prev) => (prev > 0 ? prev - 1 : images.length - 1))}
+                className="p-3 rounded-full bg-white/90 shadow-clay-flat text-clay-text-primary pointer-events-auto hover:scale-110 active:scale-95 transition-all"
+              >
+                <ChevronLeft className="w-6 h-6" />
+              </button>
+              <button
+                onClick={() => setCurrentImage((prev) => (prev < images.length - 1 ? prev + 1 : 0))}
+                className="p-3 rounded-full bg-white/90 shadow-clay-flat text-clay-text-primary pointer-events-auto hover:scale-110 active:scale-95 transition-all"
+              >
+                <ChevronRight className="w-6 h-6" />
+              </button>
+            </div>
+          </motion.div>
+
+          {/* Thumbnails */}
+          <div className="flex gap-4 overflow-x-auto pb-2 px-1 scrollbar-hide">
             {images.map((img, idx) => (
               <button
                 key={idx}
                 onClick={() => setCurrentImage(idx)}
-                className={`w-20 h-20 rounded-xl overflow-hidden border-2 flex-shrink-0 transition-all ${
-                  currentImage === idx ? 'border-emerald-500 scale-105' : 'border-transparent opacity-70'
+                className={`flex-shrink-0 w-24 h-24 rounded-[20px] overflow-hidden border-4 transition-all ${
+                  currentImage === idx 
+                    ? 'border-clay-primary scale-110 shadow-lg' 
+                    : 'border-transparent opacity-60 hover:opacity-100'
                 }`}
               >
-                <img src={img} alt={`${product.name} - ${idx + 1}`} className="w-full h-full object-cover" />
+                <img src={img} alt="" className="w-full h-full object-cover" />
               </button>
             ))}
           </div>
         </div>
 
-        {/* Info */}
-        <div>
-          <p className="text-sm text-gray-500 mb-2">{product.category_name}</p>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
-
-          <div className="flex items-center gap-4 mb-4">
-            {product.average_rating && (
-              <div className="flex items-center">
-                <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
-                <span className="ml-1 font-medium">{product.average_rating}</span>
-                <span className="ml-1 text-gray-500">({product.reviews_count} avaliações)</span>
+        {/* Product Info */}
+        <div className="flex flex-col">
+          <div className="mb-8">
+            <span className="inline-block bg-clay-sky-mist px-4 py-1.5 rounded-full text-xs font-black text-clay-grass-deep uppercase tracking-widest mb-4 shadow-sm">
+              {product.category_name || 'Construção Modular'}
+            </span>
+            <h1 className="text-4xl md:text-5xl font-display font-black text-clay-text-primary leading-tight mb-4">
+              {product.name}
+            </h1>
+            
+            <div className="flex items-center gap-6 text-clay-text-secondary font-body font-bold">
+              {product.average_rating && (
+                <div className="flex items-center gap-1.5 px-3 py-1 bg-white rounded-full shadow-sm">
+                  <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
+                  <span className="text-clay-text-primary">{product.average_rating}</span>
+                  <span className="text-clay-text-muted text-sm font-medium">({product.reviews_count} avaliações)</span>
+                </div>
+              )}
+              <div className="flex items-center gap-2">
+                <MapPin className="w-5 h-5 text-clay-primary" />
+                <span>{product.location || 'Brasil'}</span>
               </div>
-            )}
-            <span className="text-gray-300">|</span>
-            <span className="text-gray-500">{product.views_count} visualizações</span>
+            </div>
           </div>
 
-          <p className="text-4xl font-bold text-emerald-600 mb-6">
-            {formatPrice(product.base_price)}
+          <div className="clay-card bg-clay-surface-2/20 border-none shadow-none mb-8 p-6">
+            <p className="text-[12px] font-display font-black text-clay-text-muted uppercase tracking-[0.2em] mb-1">Investimento Inicial</p>
+            <p className="text-5xl font-display font-black text-clay-grass-deep">
+              {formatPrice(product.base_price)}
+            </p>
+          </div>
+
+          <p className="text-lg text-clay-text-secondary font-body leading-relaxed mb-10">
+            {product.description}
           </p>
 
-          <p className="text-gray-600 mb-6">{product.description}</p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-10">
+            <div className="clay-inset p-4 rounded-3xl flex flex-col items-center justify-center text-center">
+              <Maximize className="w-6 h-6 text-clay-primary mb-2" />
+              <span className="text-lg font-display font-black text-clay-text-primary">{product.area_m2 || 0}m²</span>
+              <span className="text-[10px] font-black text-clay-text-muted uppercase tracking-widest">Área Total</span>
+            </div>
+            <div className="clay-inset p-4 rounded-3xl flex flex-col items-center justify-center text-center">
+              <BedDouble className="w-6 h-6 text-clay-primary mb-2" />
+              <span className="text-lg font-display font-black text-clay-text-primary">{product.bedrooms || 0}</span>
+              <span className="text-[10px] font-black text-clay-text-muted uppercase tracking-widest">Quartos</span>
+            </div>
+            <div className="clay-inset p-4 rounded-3xl flex flex-col items-center justify-center text-center">
+              <Bath className="w-6 h-6 text-clay-primary mb-2" />
+              <span className="text-lg font-display font-black text-clay-text-primary">{product.bathrooms || 0}</span>
+              <span className="text-[10px] font-black text-clay-text-muted uppercase tracking-widest">Banheiros</span>
+            </div>
+            <div className="clay-inset p-4 rounded-3xl flex flex-col items-center justify-center text-center">
+              <Calendar className="w-6 h-6 text-clay-primary mb-2" />
+              <span className="text-lg font-display font-black text-clay-text-primary">{product.lead_time_days || 45}d</span>
+              <span className="text-[10px] font-black text-clay-text-muted uppercase tracking-widest">Entrega</span>
+            </div>
+          </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 mb-8">
+          <div className="flex flex-wrap gap-4 mt-auto">
             <Button
               size="lg"
-              className="flex-1"
+              className="flex-1 min-w-[200px] py-8 rounded-[24px] text-xl shadow-xl hover:shadow-2xl active:scale-95 transition-all h-auto"
               onClick={() => setShowQuoteModal(true)}
             >
-              <MessageCircle className="w-5 h-5 mr-2" />
-              Solicitar Orçamento
+              <MessageCircle className="w-6 h-6 mr-3" />
+              Quero um Orçamento
             </Button>
-            <Button size="lg" variant="outline" onClick={handleFavorite}>
-              <Heart className={`w-5 h-5 mr-2 ${isFavorite ? 'fill-red-500 text-red-500' : ''}`} />
-              {isFavorite ? 'Favoritado' : 'Favoritar'}
-            </Button>
-            <Button size="lg" variant="ghost" onClick={handleShare}>
-              <Share2 className="w-5 h-5" />
-            </Button>
-          </div>
-
-          <div className="space-y-3 p-5 rounded-2xl bg-emerald-50/50 border border-emerald-100/50"
-               style={{ boxShadow: 'inset 4px 4px 8px rgba(0,0,0,0.03), inset -4px -4px 8px rgba(255,255,255,0.8)' }}>
-            <div className="flex items-center text-gray-700">
-              <Shield className="w-5 h-5 mr-3 text-emerald-600" />
-              <span className="font-medium text-sm">Compra segura</span>
-            </div>
-            <div className="flex items-center text-gray-700">
-              <Truck className="w-5 h-5 mr-3 text-emerald-600" />
-              <span className="font-medium text-sm">Frete calculado para seu CEP</span>
-            </div>
-            <div className="flex items-center text-gray-700">
-              <Check className="w-5 h-5 mr-3 text-emerald-600" />
-              <span className="font-medium text-sm">Garantia do fabricante</span>
-            </div>
-          </div>
-
-          {product.company_name && (
-            <div className="mt-8 p-5 rounded-2xl bg-white/90 backdrop-blur-sm border border-white/80"
-                 style={{ boxShadow: '0 10px 30px -12px rgba(0, 0, 0, 0.1), inset 0 2px 4px rgba(255, 255, 255, 1), inset 0 -2px 4px rgba(0, 0, 0, 0.05)' }}>
-              <p className="text-sm text-gray-500 mb-2">Vendido por</p>
-              <Link
-                href={`/empresa/${product.company_name?.toLowerCase().replace(/\s+/g, '-')}`}
-                className="flex items-center hover:text-emerald-600"
+            <div className="flex gap-4">
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="p-8 rounded-[24px] h-full shadow-lg hover:bg-clay-surface-2 transition-all"
+                onClick={handleFavorite}
               >
-                <div className="w-12 h-12 bg-gray-200 rounded-xl mr-3 flex items-center justify-center overflow-hidden">
-                  {product.company_logo ? (
-                    <img src={product.company_logo} alt="" className="w-full h-full object-cover" />
-                  ) : (
-                    <Package className="w-6 h-6 text-gray-400" />
-                  )}
-                </div>
-                <div>
-                  <p className="font-semibold text-gray-900">{product.company_name}</p>
-                  <p className="text-sm text-gray-500">Ver perfil</p>
-                </div>
-              </Link>
+                <Heart className={`w-8 h-8 ${isFavorite ? 'fill-red-500 text-red-500' : 'text-clay-text-muted'}`} />
+              </Button>
+              <Button 
+                size="lg" 
+                variant="outline" 
+                className="p-8 rounded-[24px] h-full shadow-lg hover:bg-clay-surface-2 transition-all"
+                onClick={handleShare}
+              >
+                <Share2 className="w-8 h-8 text-clay-text-muted" />
+              </Button>
             </div>
-          )}
+          </div>
         </div>
       </div>
 
-      {/* Specifications */}
-      {product.specifications && Object.keys(product.specifications).length > 0 && (
-        <section className="mb-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Especificações</h2>
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/80 p-6"
-               style={{ boxShadow: '0 10px 30px -12px rgba(0, 0, 0, 0.1), inset 0 2px 4px rgba(255, 255, 255, 1), inset 0 -2px 4px rgba(0, 0, 0, 0.05)' }}>
-            <div>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {Object.entries(product.specifications).map(([key, value]) => (
-                  <div key={key} className="border-b border-gray-100 pb-2">
-                    <p className="text-sm text-gray-500 capitalize">{key.replace(/_/g, ' ')}</p>
-                    <p className="font-medium text-gray-900">{String(value)}</p>
+      {/* Sell by */}
+      {product.company_name && (
+        <section className="mb-20">
+          <div className="clay-card p-10 flex flex-col md:flex-row items-center gap-8 bg-clay-sky-mist/30 border-none shadow-none">
+            <div className="w-24 h-24 rounded-[28px] bg-white p-2 shadow-clay-flat flex-shrink-0">
+              <div className="w-full h-full rounded-[22px] overflow-hidden border-2 border-clay-surface-2">
+                {product.company_logo ? (
+                  <img src={product.company_logo} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-clay-surface-2">
+                    <Package className="w-10 h-10 text-clay-text-muted/40" />
                   </div>
-                ))}
+                )}
               </div>
             </div>
+            <div className="flex-1 text-center md:text-left">
+              <p className="text-sm font-display font-black text-clay-text-muted uppercase tracking-wider mb-1">Fabricante Autorizado</p>
+              <h2 className="text-3xl font-display font-black text-clay-text-primary mb-2">{product.company_name}</h2>
+              <div className="flex flex-wrap justify-center md:justify-start gap-4">
+                <div className="flex items-center gap-1.5 text-clay-grass-deep font-body font-bold">
+                  <Award className="w-4 h-4" />
+                  <span>Vendedor Verificado</span>
+                </div>
+                <div className="flex items-center gap-1.5 text-clay-text-secondary font-body">
+                  <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                  <span>4.8 (82 vendas)</span>
+                </div>
+              </div>
+            </div>
+            <Link href={`/empresa/${product.company_name?.toLowerCase().replace(/\s+/g, '-')}`}>
+              <Button variant="clay" size="lg" className="px-8 rounded-2xl">
+                Ver Perfil Completo
+              </Button>
+            </Link>
           </div>
         </section>
       )}
 
-      {/* Reviews */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-bold text-gray-900 mb-6">
-          Avaliações ({product.reviews_count || 0})
-        </h2>
-        {reviews.length > 0 ? (
-          <div className="space-y-4">
-            {reviews.slice(0, 5).map((review) => (
-              <div key={review.id} className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/80 p-6"
-                   style={{ boxShadow: 'inset 4px 4px 8px rgba(0,0,0,0.03), inset -4px -4px 8px rgba(255,255,255,0.8)' }}>
-                <div>
-                  <div className="flex items-start justify-between mb-2">
-                    <div>
-                      <p className="font-semibold text-gray-900">{review.user_name}</p>
-                      <div className="flex items-center mt-1">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`w-4 h-4 ${i < review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
-                          />
-                        ))}
-                      </div>
-                    </div>
-                    <span className="text-sm text-gray-500">{formatDate(review.created_at)}</span>
+      {/* Specifications & Content */}
+      <div className="flex flex-col lg:flex-row gap-12 mb-20">
+        <div className="flex-1 space-y-12">
+          {/* Detailed Specs */}
+          <section>
+            <h2 className="text-3xl font-display font-black text-clay-text-primary mb-8 flex items-center gap-3">
+              <SlidersHorizontal className="w-8 h-8 text-clay-primary" />
+              Ficha Técnica
+            </h2>
+            <div className="clay-card p-10 grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
+              {product.specifications ? (
+                Object.entries(product.specifications).map(([key, value]) => (
+                  <div key={key} className="flex justify-between items-center py-3 border-b-2 border-clay-surface-2 last:border-0">
+                    <span className="text-clay-text-secondary font-body font-bold capitalize">{key.replace(/_/g, ' ')}</span>
+                    <span className="text-clay-text-primary font-display font-black">{String(value)}</span>
                   </div>
-                  {review.title && <p className="font-medium text-gray-900 mb-1">{review.title}</p>}
-                  {review.comment && <p className="text-gray-600">{review.comment}</p>}
+                ))
+              ) : (
+                <div className="col-span-full py-8 text-center text-clay-text-muted font-body">
+                  Nenhuma especificação detalhada disponível.
+                </div>
+              )}
+            </div>
+          </section>
+
+          {/* Reviews Section */}
+          <section>
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-3xl font-display font-black text-clay-text-primary">Avaliações</h2>
+              <Button variant="clay" size="sm">Fazer Avaliação</Button>
+            </div>
+            
+            <div className="space-y-6">
+              {reviews.length > 0 ? (
+                reviews.map((review) => (
+                  <div key={review.id} className="clay-card p-8 group">
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-2xl bg-clay-surface-2 flex items-center justify-center font-display font-black text-clay-primary shadow-sm">
+                          {review.user_name?.[0].toUpperCase() || 'U'}
+                        </div>
+                        <div>
+                          <p className="font-display font-black text-clay-text-primary">{review.user_name || 'Usuário'}</p>
+                          <div className="flex gap-0.5">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <Star key={i} className={`w-3.5 h-3.5 ${i < review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-clay-surface-3'}`} />
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                      <span className="text-xs font-bold text-clay-text-muted">{formatDate(review.created_at)}</span>
+                    </div>
+                    {review.title && <h4 className="font-display font-bold text-clay-text-primary mb-2">{review.title}</h4>}
+                    <p className="font-body text-clay-text-secondary leading-relaxed">{review.comment}</p>
+                  </div>
+                ))
+              ) : (
+                <div className="clay-card py-16 text-center bg-clay-surface-2/20 border-none shadow-none">
+                  <Package className="w-16 h-16 text-clay-text-muted/20 mx-auto mb-4" />
+                  <p className="text-clay-text-muted font-body">Este produto ainda não recebeu avaliações.</p>
+                </div>
+              )}
+            </div>
+          </section>
+        </div>
+
+        {/* Desktop Sidebar / Sticky CTA */}
+        <aside className="lg:w-96 flex-shrink-0">
+          <div className="sticky top-24 space-y-6">
+            <div className="clay-card p-8 border-clay-primary/10">
+              <h3 className="text-xl font-display font-black text-clay-text-primary mb-6 text-center leading-tight">Pronto para seu novo lar?</h3>
+              <div className="space-y-4 mb-8">
+                <div className="flex items-center gap-4 text-clay-text-secondary">
+                  <div className="w-10 h-10 rounded-xl bg-clay-sky-mist flex items-center justify-center text-clay-grass-deep flex-shrink-0 shadow-sm">
+                    <Shield className="w-5 h-5" />
+                  </div>
+                  <p className="text-sm font-body font-bold">Compra Garantida LARModular</p>
+                </div>
+                <div className="flex items-center gap-4 text-clay-text-secondary">
+                  <div className="w-10 h-10 rounded-xl bg-clay-sky-mist flex items-center justify-center text-clay-grass-deep flex-shrink-0 shadow-sm">
+                    <Truck className="w-5 h-5" />
+                  </div>
+                  <p className="text-sm font-body font-bold">Entrega em todo o Brasil</p>
+                </div>
+                <div className="flex items-center gap-4 text-clay-text-secondary">
+                  <div className="w-10 h-10 rounded-xl bg-clay-sky-mist flex items-center justify-center text-clay-grass-deep flex-shrink-0 shadow-sm">
+                    <Award className="w-5 h-5" />
+                  </div>
+                  <p className="text-sm font-body font-bold">Padrão de Qualidade Premium</p>
                 </div>
               </div>
-            ))}
+              <Button 
+                variant="clay" 
+                className="w-full py-6 rounded-2xl text-lg h-auto shadow-lg"
+                onClick={() => setShowQuoteModal(true)}
+              >
+                Atendimento Rápido
+              </Button>
+            </div>
           </div>
-        ) : (
-          <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/80 p-6 text-center"
-               style={{ boxShadow: 'inset 4px 4px 8px rgba(0,0,0,0.03), inset -4px -4px 8px rgba(255,255,255,0.8)' }}>
-            <p className="text-gray-500">Nenhuma avaliação ainda</p>
-          </div>
-        )}
-      </section>
+        </aside>
+      </div>
 
       {/* Related Products */}
       {relatedProducts.length > 0 && (
-        <section>
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Produtos Relacionados</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {relatedProducts.map((prod) => (
-              <Link key={prod.id} href={`/produto/${prod.slug}`}>
-                <div className="bg-white rounded-2xl border border-white/80 overflow-hidden hover:-translate-y-1 transition-all duration-300"
-                     style={{ boxShadow: '0 10px 30px -12px rgba(0, 0, 0, 0.1), inset 0 2px 4px rgba(255, 255, 255, 1), inset 0 -2px 4px rgba(0, 0, 0, 0.05)' }}>
-                  <div className="aspect-video bg-gray-100 relative">
-                    {prod.images?.[0] ? (
-                      <img src={prod.images[0]} alt={prod.name} className="object-cover w-full h-full" />
-                    ) : (
-                      <div className="flex items-center justify-center h-full">
-                        <Package className="w-8 h-8 text-gray-400" />
-                      </div>
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <p className="text-sm text-gray-400">{prod.category_name}</p>
-                    <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{prod.name}</h3>
-                    <p className="text-lg font-bold text-emerald-600">{formatPrice(prod.base_price)}</p>
-                  </div>
-                </div>
-              </Link>
+        <section className="mt-20">
+          <h2 className="text-3xl font-display font-black text-clay-text-primary mb-8">Também pode te interessar</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {relatedProducts.slice(0, 4).map((prod) => (
+              <ProductCard
+                key={prod.id}
+                id={prod.id}
+                name={prod.name}
+                slug={prod.slug}
+                basePrice={prod.base_price}
+                imageUrl={prod.images?.[0] || '/placeholder.jpg'}
+                location={prod.location || 'Brasil'}
+                area={prod.area_m2 || 0}
+                bedrooms={prod.bedrooms || 0}
+                isVerified={prod.featured}
+              />
             ))}
           </div>
         </section>
       )}
 
       {/* Quote Modal */}
-      {showQuoteModal && (
-        <QuoteModal product={product} onClose={() => setShowQuoteModal(false)} />
-      )}
+      <AnimatePresence>
+        {showQuoteModal && (
+          <QuoteModal product={product} onClose={() => setShowQuoteModal(false)} />
+        )}
+      </AnimatePresence>
     </div>
   );
 }
