@@ -256,6 +256,272 @@ if Rails.env.development?
   puts "  ✅ Admin: admin@larmodular.com"
 end
 
+# ========================
+# COMPANIES
+# ========================
+puts "🏢 Creating companies..."
+
+sp = City.find_by(name: 'São Paulo')
+rj = City.find_by(name: 'Rio de Janeiro')
+ctb = City.find_by(name: 'Curitiba')
+flp = City.find_by(name: 'Florianópolis')
+bh = City.find_by(name: 'Belo Horizonte')
+
+companies_data = [
+  {
+    name: 'ModuLar Brasil', slug: 'modular-brasil',
+    description: 'Líder em construções modulares no Brasil com mais de 15 anos de experiência. Produzimos tiny houses, containers e módulos sob medida com tecnologia de ponta e sustentabilidade.',
+    phone: '(11) 3456-7890', email: 'contato@modularbrasil.com.br', website: 'https://modularbrasil.com.br',
+    region: regions['sudeste'], city: sp, status: 'approved', verified: true, featured: true, experience_years: 15
+  },
+  {
+    name: 'Container House SP', slug: 'container-house-sp',
+    description: 'Especialistas em casas container de alto padrão. Projetos personalizados com acabamento premium, isolamento térmico e acústico de última geração.',
+    phone: '(11) 2345-6789', email: 'projetos@containerhousesp.com.br', website: 'https://containerhousesp.com.br',
+    region: regions['sudeste'], city: sp, status: 'approved', verified: true, featured: true, experience_years: 8
+  },
+  {
+    name: 'Tiny Living Sul', slug: 'tiny-living-sul',
+    description: 'Fabricamos tiny houses artesanais com madeira de reflorestamento. Cada projeto é único e feito à mão por mestres carpinteiros da região Sul.',
+    phone: '(41) 3456-1234', email: 'ola@tinylivingsul.com.br', website: 'https://tinylivingsul.com.br',
+    region: regions['sul'], city: ctb, status: 'approved', verified: true, featured: false, experience_years: 6
+  },
+  {
+    name: 'EcoMod Construções', slug: 'ecomod-construcoes',
+    description: 'Construções modulares ecológicas com energia solar integrada, captação de água da chuva e materiais 100% reciclados.',
+    phone: '(48) 3456-5678', email: 'contato@ecomod.com.br', website: 'https://ecomod.com.br',
+    region: regions['sul'], city: flp, status: 'approved', verified: true, featured: true, experience_years: 10
+  },
+  {
+    name: 'Nova Habitar', slug: 'nova-habitar',
+    description: 'Módulos residenciais e comerciais com entrega em até 90 dias. Fábrica própria em Belo Horizonte com capacidade para 50 módulos/mês.',
+    phone: '(31) 3456-9012', email: 'vendas@novahabitar.com.br', website: 'https://novahabitar.com.br',
+    region: regions['sudeste'], city: bh, status: 'approved', verified: false, featured: false, experience_years: 4
+  },
+  {
+    name: 'CasaBox Rio', slug: 'casabox-rio',
+    description: 'Containers transformados em espaços modernos no Rio de Janeiro. Escritórios, lojas, studios e residências compactas.',
+    phone: '(21) 3456-3456', email: 'contato@casaboxrio.com.br', website: 'https://casaboxrio.com.br',
+    region: regions['sudeste'], city: rj, status: 'approved', verified: true, featured: false, experience_years: 7
+  }
+]
+
+companies = {}
+companies_data.each do |data|
+  companies[data[:slug]] = Company.find_or_create_by!(slug: data[:slug]) do |c|
+    c.name = data[:name]
+    c.description = data[:description]
+    c.phone = data[:phone]
+    c.email = data[:email]
+    c.website = data[:website]
+    c.region = data[:region]
+    c.city = data[:city]
+    c.status = data[:status]
+    c.verified = data[:verified]
+    c.featured = data[:featured]
+    c.experience_years = data[:experience_years]
+  end
+  puts "  ✅ Company: #{data[:name]}"
+end
+
+# ========================
+# PRODUCTS
+# ========================
+puts "🏠 Creating products..."
+
+products_data = [
+  # ModuLar Brasil
+  {
+    company: 'modular-brasil', category: 'tiny-houses',
+    name: 'Tiny House Aurora 25m²', slug: 'tiny-house-aurora-25m2',
+    description: 'Tiny house completa com 25m², sala integrada com cozinha, 1 quarto, 1 banheiro. Acabamento em madeira de reflorestamento, isolamento térmico e acústico. Inclui instalações elétricas e hidráulicas completas.',
+    short_description: 'Tiny house compacta e funcional para casal',
+    base_price: 89_900, area_m2: 25, bedrooms: 1, bathrooms: 1,
+    warranty_months: 24, lead_time_days: 60, featured: true,
+    specs: { material: 'Madeira de reflorestamento', isolamento: 'Lã de PET', telhado: 'Metálico termoacústico', piso: 'Porcelanato', acabamento: 'Premium' }
+  },
+  {
+    company: 'modular-brasil', category: 'modulares',
+    name: 'Casa Modular Horizonte 60m²', slug: 'casa-modular-horizonte-60m2',
+    description: 'Casa modular espaçosa com 60m², 2 quartos, sala ampla, cozinha americana, 1 banheiro e varanda. Estrutura em steel frame com acabamento contemporâneo.',
+    short_description: 'Casa modular para família pequena',
+    base_price: 189_000, area_m2: 60, bedrooms: 2, bathrooms: 1,
+    warranty_months: 36, lead_time_days: 90, featured: true,
+    specs: { material: 'Steel Frame', isolamento: 'EPS + Lã mineral', telhado: 'Shingle', piso: 'Porcelanato 60x60', acabamento: 'Alto padrão' }
+  },
+  {
+    company: 'modular-brasil', category: 'modulares',
+    name: 'Módulo Comercial Flex 30m²', slug: 'modulo-comercial-flex-30m2',
+    description: 'Módulo versátil para escritório, loja ou consultório. 30m² com layout aberto, ar-condicionado split, piso elevado e cabeamento estruturado.',
+    short_description: 'Módulo comercial pronto para uso',
+    base_price: 125_000, area_m2: 30, bedrooms: 0, bathrooms: 1,
+    warranty_months: 24, lead_time_days: 45, featured: false,
+    specs: { material: 'Steel Frame', uso: 'Comercial', ar_condicionado: 'Split 12000 BTU', rede: 'Cat6 estruturado' }
+  },
+
+  # Container House SP
+  {
+    company: 'container-house-sp', category: 'containers',
+    name: 'Container Loft 40ft Premium', slug: 'container-loft-40ft-premium',
+    description: 'Loft container de 40 pés com design industrial moderno. Pé-direito duplo, mezanino em aço, cozinha gourmet e banheiro com acabamento em porcelanato. Isolamento térmico certificado.',
+    short_description: 'Loft industrial premium em container 40ft',
+    base_price: 165_000, area_m2: 28, bedrooms: 1, bathrooms: 1,
+    warranty_months: 24, lead_time_days: 75, featured: true,
+    specs: { container: '40ft High Cube', isolamento: 'Poliuretano projetado', janelas: 'Vidro duplo temperado', piso: 'Porcelanato retificado', mezanino: 'Estrutura metálica' }
+  },
+  {
+    company: 'container-house-sp', category: 'containers',
+    name: 'Container Studio 20ft', slug: 'container-studio-20ft',
+    description: 'Studio compacto em container 20 pés. Ideal para airbnb, home office ou moradia solo. Inclui banheiro completo, mini cozinha e ar-condicionado.',
+    short_description: 'Studio compacto para airbnb ou home office',
+    base_price: 79_500, area_m2: 14, bedrooms: 0, bathrooms: 1,
+    warranty_months: 18, lead_time_days: 45, featured: false,
+    specs: { container: '20ft Standard', isolamento: 'Poliuretano 50mm', ar_condicionado: 'Split 9000 BTU', aquecedor: 'Elétrico de passagem' }
+  },
+  {
+    company: 'container-house-sp', category: 'containers',
+    name: 'Container Duplo Família 56m²', slug: 'container-duplo-familia-56m2',
+    description: '2 containers 40ft unidos formando uma casa completa: 2 quartos, sala, cozinha, 2 banheiros e área de serviço. Acabamento residencial completo.',
+    short_description: 'Casa container para família com 2 quartos',
+    base_price: 245_000, area_m2: 56, bedrooms: 2, bathrooms: 2,
+    warranty_months: 36, lead_time_days: 120, featured: true,
+    specs: { containers: '2x 40ft High Cube', isolamento: 'Dupla camada', telhado: 'Butterfly com calha central', energia_solar: '3kWp incluso' }
+  },
+
+  # Tiny Living Sul
+  {
+    company: 'tiny-living-sul', category: 'tiny-houses',
+    name: 'Tiny House Pinheiro 18m²', slug: 'tiny-house-pinheiro-18m2',
+    description: 'Tiny house artesanal em madeira maciça de pinus tratado. Design aconchegante com loft para cama, sala com lareira, cozinha compacta e banheiro seco compostável.',
+    short_description: 'Tiny house rústica artesanal',
+    base_price: 68_000, area_m2: 18, bedrooms: 1, bathrooms: 1,
+    warranty_months: 24, lead_time_days: 90, featured: false,
+    specs: { madeira: 'Pinus tratado em autoclave', telhado: 'Duas águas em madeira', lareira: 'A lenha com duto', banheiro: 'Seco compostável' }
+  },
+  {
+    company: 'tiny-living-sul', category: 'tiny-houses',
+    name: 'Tiny House Araucária 32m²', slug: 'tiny-house-araucaria-32m2',
+    description: 'Tiny house premium com 32m² em madeira nobre. 1 suíte com closet, sala com amplas janelas panorâmicas, cozinha planejada e deck externo de 10m².',
+    short_description: 'Tiny house premium com deck panorâmico',
+    base_price: 142_000, area_m2: 32, bedrooms: 1, bathrooms: 1,
+    warranty_months: 36, lead_time_days: 120, featured: true,
+    specs: { madeira: 'Eucalipto tratado + acabamento em pinus', janelas: 'Panorâmicas 2.4m', deck: '10m² em deck modular', aquecimento: 'Piso radiante elétrico' }
+  },
+
+  # EcoMod
+  {
+    company: 'ecomod-construcoes', category: 'modulares',
+    name: 'EcoCasa Solar 45m²', slug: 'ecocasa-solar-45m2',
+    description: 'Casa modular 100% sustentável: energia solar 5kWp, captação de água da chuva 5000L, materiais reciclados e certificação LEED. 2 quartos e 1 banheiro.',
+    short_description: 'Casa modular sustentável com energia solar',
+    base_price: 198_000, area_m2: 45, bedrooms: 2, bathrooms: 1,
+    warranty_months: 60, lead_time_days: 90, featured: true,
+    specs: { energia_solar: '5kWp com bateria', agua_chuva: 'Cisterna 5000L', certificacao: 'LEED Silver', material: 'Painéis OSB reciclados' }
+  },
+  {
+    company: 'ecomod-construcoes', category: 'modulares',
+    name: 'EcoStudio Compacto 20m²', slug: 'ecostudio-compacto-20m2',
+    description: 'Módulo compacto com pegada de carbono zero. Energia solar, banheiro com reuso de água cinza e materiais biocompatíveis. Ideal para home office ou ADU.',
+    short_description: 'Módulo zero carbono para home office',
+    base_price: 85_000, area_m2: 20, bedrooms: 0, bathrooms: 1,
+    warranty_months: 36, lead_time_days: 60, featured: false,
+    specs: { energia: 'Off-grid solar 2kWp', reuso_agua: 'Sistema de água cinza', ventilacao: 'Natural cruzada', certificacao: 'Carbono neutro' }
+  },
+
+  # Nova Habitar
+  {
+    company: 'nova-habitar', category: 'modulares',
+    name: 'Módulo Residencial Prático 35m²', slug: 'modulo-residencial-pratico-35m2',
+    description: 'Módulo residencial de fábrica com entrega em 60 dias. 1 quarto, sala, cozinha e banheiro. Acabamento padrão com opção de upgrade.',
+    short_description: 'Módulo residencial econômico e rápido',
+    base_price: 95_000, area_m2: 35, bedrooms: 1, bathrooms: 1,
+    warranty_months: 24, lead_time_days: 60, featured: false,
+    specs: { estrutura: 'Steel Frame leve', acabamento: 'Padrão com upgrade opcional', entrega: 'Transporte incluso até 500km' }
+  },
+
+  # CasaBox Rio
+  {
+    company: 'casabox-rio', category: 'containers',
+    name: 'Container Beach House 40ft', slug: 'container-beach-house-40ft',
+    description: 'Casa container tropical para litoral. Varanda ampla, ventilação cruzada, proteção contra maresia e design praiano com tons naturais.',
+    short_description: 'Casa container projetada para praia',
+    base_price: 155_000, area_m2: 28, bedrooms: 1, bathrooms: 1,
+    warranty_months: 24, lead_time_days: 75, featured: false,
+    specs: { container: '40ft com tratamento anticorrosivo extra', pintura: 'Epóxi naval', ventilacao: 'Cruzada natural', varanda: '12m² coberta' }
+  },
+  {
+    company: 'casabox-rio', category: 'containers',
+    name: 'Pop-up Store Container 20ft', slug: 'popup-store-container-20ft',
+    description: 'Container comercial com abertura lateral total, iluminação LED, prateleiras modulares e identidade visual customizável. Pronto para eventos e feiras.',
+    short_description: 'Container para loja pop-up e eventos',
+    base_price: 62_000, area_m2: 14, bedrooms: 0, bathrooms: 0,
+    warranty_months: 12, lead_time_days: 30, featured: false,
+    specs: { container: '20ft com abertura lateral', iluminacao: 'LED perimetral', prateleiras: 'Modulares removíveis', identidade_visual: 'Adesivagem inclusa' }
+  }
+]
+
+products_data.each do |data|
+  company = companies[data[:company]]
+  category = categories[data[:category]] || Category.find_by(slug: data[:category])
+  next unless company && category
+
+  Product.find_or_create_by!(slug: data[:slug]) do |p|
+    p.company = company
+    p.category = category
+    p.name = data[:name]
+    p.description = data[:description]
+    p.short_description = data[:short_description]
+    p.base_price = data[:base_price]
+    p.area_m2 = data[:area_m2]
+    p.bedrooms = data[:bedrooms]
+    p.bathrooms = data[:bathrooms]
+    p.warranty_months = data[:warranty_months]
+    p.lead_time_days = data[:lead_time_days]
+    p.featured = data[:featured]
+    p.active = true
+    p.specs = data[:specs]
+  end
+  puts "  ✅ Product: #{data[:name]} (#{data[:base_price]})"
+end
+
+# ========================
+# SAMPLE REVIEWS
+# ========================
+puts "⭐ Creating sample reviews..."
+
+# Create a test user for reviews
+test_user = User.find_or_create_by!(email: 'usuario@teste.com') do |u|
+  u.name = 'Maria Silva'
+  u.password = 'teste123456'
+  u.password_confirmation = 'teste123456'
+  u.role = 'buyer'
+end
+
+reviews_data = [
+  { company: 'modular-brasil', rating: 5, title: 'Excelente qualidade!', comment: 'Compramos uma casa modular e ficou perfeita. Entrega no prazo e acabamento impecável.' },
+  { company: 'modular-brasil', rating: 4, title: 'Muito bom', comment: 'Ótima empresa, apenas o prazo de entrega atrasou uma semana.' },
+  { company: 'container-house-sp', rating: 5, title: 'Superou expectativas', comment: 'O container loft ficou incrível! Design industrial mas muito confortável.' },
+  { company: 'tiny-living-sul', rating: 5, title: 'Artesanato de verdade', comment: 'Cada detalhe é feito com carinho. A tiny house é uma obra de arte.' },
+  { company: 'ecomod-construcoes', rating: 4, title: 'Sustentável e bonita', comment: 'A energia solar funciona perfeitamente. Conta de luz zerada há 3 meses.' },
+  { company: 'casabox-rio', rating: 4, title: 'Container praiano top', comment: 'Ótima ventilação e resistência à maresia. Recomendo para litoral.' }
+]
+
+reviews_data.each do |data|
+  company = companies[data[:company]]
+  next unless company
+
+  product = company.products.first
+  Review.find_or_create_by!(user: test_user, company: company) do |r|
+    r.product = product
+    r.rating = data[:rating]
+    r.title = data[:title]
+    r.comment = data[:comment]
+    r.status = 'approved'
+    r.verified_purchase = true
+  end
+  puts "  ✅ Review: #{data[:title]}"
+end
+
 puts ""
 puts "🎉 Base data created successfully!"
 puts ""

@@ -91,6 +91,22 @@ body {
   color: var(--brand-secondary);
   font-family: var(--font-jakarta), var(--font-sans), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
+  position: relative;
+}
+
+body::after {
+  content: "";
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 280px;
+  background: url('/background-larmodular.PNG') center bottom / cover no-repeat;
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: 0;
+  mask-image: linear-gradient(to bottom, transparent 0%, black 40%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 40%);
 }
 
 h1, h2, h3, h4, h5, h6 {
