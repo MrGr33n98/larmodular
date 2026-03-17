@@ -2,24 +2,216 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { api } from '@/lib/api';
-import { Product, Review, Company, Category } from '@/types';
+import { toast } from '@/components/ui/toast';
+import { Product, Review } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { formatPrice, formatDate } from '@/lib/utils';
-import { 
-  Star, Heart, Share2, Phone, MessageCircle, MapPin, 
-  ChevronLeft, ChevronRight, Check, Package, Shield, Truck
+import {
+  Star, Heart, Share2, MessageCircle, MapPin,
+  ChevronLeft, ChevronRight, Check, Package, Shield, Truck, X,
 } from 'lucide-react';
 
+// ── Quote form schema ──────────────────────────────────────────────
+const quoteSchema = z.object({
+  name:       z.string().min(2, 'Nome obrigatório'),
+  email:      z.string().email('E-mail inválido'),
+  phone:      z.string().min(8, 'Telefone obrigatório'),
+  message:    z.string().min(10, 'Descreva brevemente sua necessidade'),
+  budget_min: z.string().optional(),
+  budget_max: z.string().optional(),
+  timeline:   z.string().optional(),
+});
+type QuoteFormData = z.infer<typeof quoteSchema>;
+
+// ── Quote Modal ────────────────────────────────────────────────────
+function QuoteModal({
+  product,
+  onClose,
+}: {
+  product: Product;
+  onClose: () => void;
+}) {
+  const [submitting, setSubmitting] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<QuoteFormData>({ resolver: zodResolver(quoteSchema) });
+
+  const onSubmit = async (data: QuoteFormData) => {
+    setSubmitting(true);
+    try {
+      await api.post('/quote_requests', {
+        quote_request: {
+          product_id:  product.id,
+          company_id:  product.company_id,
+          message:     data.message,
+          budget_min:  data.budget_min ? parseFloat(data.budget_min) : undefined,
+          budget_max:  data.budget_max ? parseFloat(data.budget_max) : undefined,
+          timeline:    data.timeline,
+          lead_attributes: {
+            name:  data.name,
+            email: data.email,
+            phone: data.phone,
+          },
+        },
+      });
+      toast({
+        type: 'success',
+        title: 'Orçamento enviado!',
+        description: 'A empresa entrará em contato em breve.',
+      });
+      reset();
+      onClose();
+    } catch (err: any) {
+      const messages: string[] =
+        err?.response?.data?.errors ||
+        err?.response?.data?.message ||
+        [];
+      toast({
+        type: 'error',
+        title: 'Não foi possível enviar',
+        description: Array.isArray(messages) ? messages.join(', ') : String(messages),
+      });
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center p-4"
+      style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)' }}
+      onClick={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div
+        className="relative w-full max-w-lg rounded-3xl overflow-hidden"
+        style={{
+          background: 'rgba(255,255,255,0.95)',
+          boxShadow: '0 24px 64px rgba(0,0,0,0.18), 0 8px 24px rgba(0,0,0,0.1)',
+        }}
+      >
+        {/* Header */}
+        <div className="px-7 pt-7 pb-4 flex items-start justify-between">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">Solicitar Orçamento</h2>
+            <p className="text-sm text-gray-500 mt-0.5 line-clamp-1">{product.name}</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="ml-4 p-2 rounded-full text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors"
+            aria-label="Fechar"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="px-7 pb-7 space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Nome *</label>
+              <Input {...register('name')} placeholder="Seu nome completo" />
+              {errors.name && (
+                <p className="text-xs text-red-500 mt-1">{errors.name.message}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Telefone *</label>
+              <Input {...register('phone')} placeholder="(11) 99999-9999" type="tel" />
+              {errors.phone && (
+                <p className="text-xs text-red-500 mt-1">{errors.phone.message}</p>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">E-mail *</label>
+            <Input {...register('email')} placeholder="seu@email.com" type="email" />
+            {errors.email && (
+              <p className="text-xs text-red-500 mt-1">{errors.email.message}</p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Mensagem *</label>
+            <textarea
+              {...register('message')}
+              rows={3}
+              placeholder="Descreva suas necessidades, localidade, personalização..."
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent resize-none"
+            />
+            {errors.message && (
+              <p className="text-xs text-red-500 mt-1">{errors.message.message}</p>
+            )}
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Orçamento mín. (R$)</label>
+              <Input {...register('budget_min')} placeholder="50.000" type="number" min="0" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Orçamento máx. (R$)</label>
+              <Input {...register('budget_max')} placeholder="200.000" type="number" min="0" />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Prazo desejado</label>
+            <select
+              {...register('timeline')}
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+            >
+              <option value="">Selecione</option>
+              <option value="1_month">Até 1 mês</option>
+              <option value="3_months">1 a 3 meses</option>
+              <option value="6_months">3 a 6 meses</option>
+              <option value="12_months">6 a 12 meses</option>
+              <option value="flexible">Flexível</option>
+            </select>
+          </div>
+
+          <div className="pt-2 flex gap-3">
+            <Button
+              type="button"
+              variant="outline"
+              className="flex-1"
+              onClick={onClose}
+              disabled={submitting}
+            >
+              Cancelar
+            </Button>
+            <Button
+              type="submit"
+              className="flex-1"
+              disabled={submitting}
+            >
+              {submitting ? 'Enviando...' : 'Enviar Orçamento'}
+            </Button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+// ── Main Component ─────────────────────────────────────────────────
 export default function ProductClient({ slug }: { slug: string }) {
   const [product, setProduct] = useState<Product | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
-  const [company, setCompany] = useState<Company | null>(null);
   const [loading, setLoading] = useState(true);
   const [currentImage, setCurrentImage] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [showQuoteModal, setShowQuoteModal] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -28,7 +220,7 @@ export default function ProductClient({ slug }: { slug: string }) {
           api.get<{ data: Product }>(`/products/${slug}`),
         ]);
         setProduct(productRes.data.data);
-        
+
         if (productRes.data.data) {
           const [reviewsRes, relatedRes] = await Promise.all([
             api.get<{ data: Review[] }>(`/products/${slug}/reviews`),
@@ -44,24 +236,17 @@ export default function ProductClient({ slug }: { slug: string }) {
       }
     };
 
-    if (slug) {
-      fetchData();
-    }
+    if (slug) fetchData();
   }, [slug]);
 
-  const handleFavorite = () => {
-    setIsFavorite(!isFavorite);
-  };
+  const handleFavorite = () => setIsFavorite(!isFavorite);
 
   const handleShare = () => {
     if (navigator.share) {
-      navigator.share({
-        title: product?.name,
-        text: product?.description,
-        url: window.location.href,
-      });
+      navigator.share({ title: product?.name, text: product?.description, url: window.location.href });
     } else {
       navigator.clipboard.writeText(window.location.href);
+      toast({ type: 'success', title: 'Link copiado!' });
     }
   };
 
@@ -75,26 +260,26 @@ export default function ProductClient({ slug }: { slug: string }) {
       "@type": "Offer",
       "price": product.base_price,
       "priceCurrency": "BRL",
-      "availability": product.active ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+      "availability": product.active ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
     },
     "aggregateRating": product.average_rating ? {
       "@type": "AggregateRating",
       "ratingValue": product.average_rating,
-      "reviewCount": product.reviews_count || 0
+      "reviewCount": product.reviews_count || 0,
     } : undefined,
     "seller": product.company_name ? {
       "@type": "Organization",
-      "name": product.company_name
-    } : undefined
+      "name": product.company_name,
+    } : undefined,
   } : null;
 
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="animate-pulse">
-          <div className="h-96 bg-gray-200 rounded-xl mb-8"></div>
-          <div className="h-8 bg-gray-200 rounded w-2/3 mb-4"></div>
-          <div className="h-6 bg-gray-200 rounded w-1/3"></div>
+          <div className="h-96 bg-gray-200 rounded-xl mb-8" />
+          <div className="h-8 bg-gray-200 rounded w-2/3 mb-4" />
+          <div className="h-6 bg-gray-200 rounded w-1/3" />
         </div>
       </div>
     );
@@ -123,13 +308,13 @@ export default function ProductClient({ slug }: { slug: string }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}
-      
+
       <nav className="flex items-center text-sm text-gray-500 mb-6" aria-label="Breadcrumb">
         <Link href="/" className="hover:text-emerald-600">Início</Link>
         <ChevronRight className="w-4 h-4 mx-2" />
         <Link href="/busca" className="hover:text-emerald-600">Produtos</Link>
         <ChevronRight className="w-4 h-4 mx-2" />
-        <Link href={`/busca?categoria=${product.category_name}`} className="hover:text-emerald-600">
+        <Link href={`/busca?categoria=${product.category_id}`} className="hover:text-emerald-600">
           {product.category_name}
         </Link>
         <ChevronRight className="w-4 h-4 mx-2" />
@@ -137,29 +322,30 @@ export default function ProductClient({ slug }: { slug: string }) {
       </nav>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+        {/* Images */}
         <div>
-          <div className="aspect-square bg-gray-100 rounded-xl overflow-hidden mb-4 relative">
-            <img 
-              src={images[currentImage]} 
+          <div className="aspect-square bg-gray-100 rounded-2xl overflow-hidden mb-4 relative"
+               style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}>
+            <img
+              src={images[currentImage]}
               alt={product.name}
               className="w-full h-full object-cover"
-              priority
             />
             {product.featured && (
               <span className="absolute top-4 left-4 bg-emerald-600 text-white text-sm px-3 py-1 rounded-full">
                 Destaque
               </span>
             )}
-            <button 
-              onClick={() => setCurrentImage(prev => prev > 0 ? prev - 1 : images.length - 1)}
-              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow"
+            <button
+              onClick={() => setCurrentImage((prev) => (prev > 0 ? prev - 1 : images.length - 1))}
+              className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm p-2 rounded-full shadow"
               aria-label="Imagem anterior"
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <button 
-              onClick={() => setCurrentImage(prev => prev < images.length - 1 ? prev + 1 : 0)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 p-2 rounded-full shadow"
+            <button
+              onClick={() => setCurrentImage((prev) => (prev < images.length - 1 ? prev + 1 : 0))}
+              className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm p-2 rounded-full shadow"
               aria-label="Próxima imagem"
             >
               <ChevronRight className="w-5 h-5" />
@@ -170,20 +356,21 @@ export default function ProductClient({ slug }: { slug: string }) {
               <button
                 key={idx}
                 onClick={() => setCurrentImage(idx)}
-                className={`w-20 h-20 rounded-lg overflow-hidden border-2 flex-shrink-0 ${
-                  currentImage === idx ? 'border-emerald-600' : 'border-transparent'
+                className={`w-20 h-20 rounded-xl overflow-hidden border-2 flex-shrink-0 transition-all ${
+                  currentImage === idx ? 'border-emerald-500 scale-105' : 'border-transparent opacity-70'
                 }`}
               >
-                <img src={img} alt={`${product.name} - Imagem ${idx + 1}`} className="w-full h-full object-cover" />
+                <img src={img} alt={`${product.name} - ${idx + 1}`} className="w-full h-full object-cover" />
               </button>
             ))}
           </div>
         </div>
 
+        {/* Info */}
         <div>
           <p className="text-sm text-gray-500 mb-2">{product.category_name}</p>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">{product.name}</h1>
-          
+
           <div className="flex items-center gap-4 mb-4">
             {product.average_rating && (
               <div className="flex items-center">
@@ -200,12 +387,14 @@ export default function ProductClient({ slug }: { slug: string }) {
             {formatPrice(product.base_price)}
           </p>
 
-          <p className="text-gray-600 mb-6">
-            {product.description}
-          </p>
+          <p className="text-gray-600 mb-6">{product.description}</p>
 
           <div className="flex flex-col sm:flex-row gap-3 mb-8">
-            <Button size="lg" className="flex-1">
+            <Button
+              size="lg"
+              className="flex-1"
+              onClick={() => setShowQuoteModal(true)}
+            >
               <MessageCircle className="w-5 h-5 mr-2" />
               Solicitar Orçamento
             </Button>
@@ -234,12 +423,15 @@ export default function ProductClient({ slug }: { slug: string }) {
           </div>
 
           {product.company_name && (
-            <div className="mt-8 p-4 bg-gray-50 rounded-lg">
+            <div className="mt-8 p-4 bg-gray-50 rounded-2xl">
               <p className="text-sm text-gray-500 mb-2">Vendido por</p>
-              <Link href={`/empresa/${product.company_name?.toLowerCase().replace(/\s+/g, '-')}`} className="flex items-center hover:text-emerald-600">
-                <div className="w-12 h-12 bg-gray-200 rounded-lg mr-3 flex items-center justify-center">
+              <Link
+                href={`/empresa/${product.company_name?.toLowerCase().replace(/\s+/g, '-')}`}
+                className="flex items-center hover:text-emerald-600"
+              >
+                <div className="w-12 h-12 bg-gray-200 rounded-xl mr-3 flex items-center justify-center overflow-hidden">
                   {product.company_logo ? (
-                    <img src={product.company_logo} alt="" className="w-full h-full object-cover rounded-lg" />
+                    <img src={product.company_logo} alt="" className="w-full h-full object-cover" />
                   ) : (
                     <Package className="w-6 h-6 text-gray-400" />
                   )}
@@ -254,6 +446,7 @@ export default function ProductClient({ slug }: { slug: string }) {
         </div>
       </div>
 
+      {/* Specifications */}
       {product.specifications && Object.keys(product.specifications).length > 0 && (
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Especificações</h2>
@@ -272,6 +465,7 @@ export default function ProductClient({ slug }: { slug: string }) {
         </section>
       )}
 
+      {/* Reviews */}
       <section className="mb-12">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">
           Avaliações ({product.reviews_count || 0})
@@ -286,21 +480,17 @@ export default function ProductClient({ slug }: { slug: string }) {
                       <p className="font-semibold text-gray-900">{review.user_name}</p>
                       <div className="flex items-center mt-1">
                         {Array.from({ length: 5 }).map((_, i) => (
-                          <Star 
-                            key={i} 
-                            className={`w-4 h-4 ${i < review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
+                          <Star
+                            key={i}
+                            className={`w-4 h-4 ${i < review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
                           />
                         ))}
                       </div>
                     </div>
                     <span className="text-sm text-gray-500">{formatDate(review.created_at)}</span>
                   </div>
-                  {review.title && (
-                    <p className="font-medium text-gray-900 mb-1">{review.title}</p>
-                  )}
-                  {review.comment && (
-                    <p className="text-gray-600">{review.comment}</p>
-                  )}
+                  {review.title && <p className="font-medium text-gray-900 mb-1">{review.title}</p>}
+                  {review.comment && <p className="text-gray-600">{review.comment}</p>}
                 </CardContent>
               </Card>
             ))}
@@ -314,6 +504,7 @@ export default function ProductClient({ slug }: { slug: string }) {
         )}
       </section>
 
+      {/* Related Products */}
       {relatedProducts.length > 0 && (
         <section>
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Produtos Relacionados</h2>
@@ -340,6 +531,11 @@ export default function ProductClient({ slug }: { slug: string }) {
             ))}
           </div>
         </section>
+      )}
+
+      {/* Quote Modal */}
+      {showQuoteModal && (
+        <QuoteModal product={product} onClose={() => setShowQuoteModal(false)} />
       )}
     </div>
   );
