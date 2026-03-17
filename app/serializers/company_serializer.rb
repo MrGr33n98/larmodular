@@ -1,6 +1,6 @@
 class CompanySerializer < ActiveModel::Serializer
-  attributes :id, :name, :slug, :description, :logo_url, :cover_url, :website, :phone, :email, 
-             :address, :zip_code, :status, :verified, :featured, :region_id, :city_id,
+  attributes :id, :name, :slug, :description, :logo_url, :banner_url, :website, :phone, :email,
+             :address, :status, :verified, :featured, :region_id, :city_id,
              :products_count, :reviews_count, :average_rating
 
   attribute :region_name do

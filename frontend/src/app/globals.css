@@ -132,6 +132,41 @@ body {
     radial-gradient(ellipse at 50% 100%, rgba(106,184,64,0.15) 0%, transparent 50%);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  position: relative;
+}
+
+/* Background illustration — fixed, visible mas suave */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url('/background-larmodular.PNG');
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  opacity: 0.28;
+  pointer-events: none;
+  z-index: 0;
+  mask-image: linear-gradient(
+    to top,
+    rgba(0,0,0,0.85) 0%,
+    rgba(0,0,0,0.6) 40%,
+    rgba(0,0,0,0.2) 75%,
+    rgba(0,0,0,0) 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to top,
+    rgba(0,0,0,0.85) 0%,
+    rgba(0,0,0,0.6) 40%,
+    rgba(0,0,0,0.2) 75%,
+    rgba(0,0,0,0) 100%
+  );
+}
+
+/* Garante que todo conteúdo fique acima do bg */
+body > * {
+  position: relative;
+  z-index: 1;
 }
 
 h1, h2, h3, h4, h5, h6 {

@@ -14,9 +14,9 @@ class Product < ApplicationRecord
   
   scope :active, -> { where(active: true) }
   scope :featured, -> { where(featured: true) }
-  scope :by_category, ->(category_id) { where(category_id: category_id) }
-  scope :by_company, ->(company_id) { where(company_id: company_id) }
-  scope :price_range, ->(min, max) { where('base_price >= ? AND base_price <= ?', min, max) if min && max }
+  scope :by_category, ->(category_id) { category_id.present? ? where(category_id: category_id) : all }
+  scope :by_company, ->(company_id) { company_id.present? ? where(company_id: company_id) : all }
+  scope :price_range, ->(min, max) { min.present? && max.present? ? where('base_price >= ? AND base_price <= ?', min, max) : all }
   
   def to_s
     name
