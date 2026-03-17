@@ -1,7 +1,10 @@
 module Api
   module V1
     class GeoController < BaseController
-      skip_before_action :authenticate_user!, except: []
+      # Guard: Some setups may not define authenticate_user!
+      if respond_to?(:authenticate_user!)
+        skip_before_action :authenticate_user!, except: []
+      end
       
       def detect
         ip = request.remote_ip || params[:ip]
