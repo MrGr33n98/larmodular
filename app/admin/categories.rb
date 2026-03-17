@@ -1,7 +1,7 @@
 ActiveAdmin.register Category do
   menu label: 'Categorias'
 
-  permit_params :name, :slug, :description, :icon, :parent_id, :position
+  permit_params :name, :slug, :description, :icon, :parent_id, :position, :active
 
   filter :name, label: 'Nome'
   filter :parent, label: 'Categoria Pai'
@@ -26,6 +26,7 @@ ActiveAdmin.register Category do
       f.input :icon, label: 'Ícone'
       f.input :parent, label: 'Categoria Pai'
       f.input :position, label: 'Posição'
+      f.input :active, label: 'Ativo'
     end
     f.actions
   end

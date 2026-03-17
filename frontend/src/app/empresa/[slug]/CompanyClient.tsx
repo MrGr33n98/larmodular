@@ -7,10 +7,15 @@ import { Company, Product, Review } from '@/types';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { formatPrice, formatDate } from '@/lib/utils';
-import { 
-  Star, MapPin, Phone, Mail, Globe, ChevronRight, 
+import {
+  Star, MapPin, Phone, Mail, Globe, ChevronRight,
   Package, Shield, MessageCircle, ArrowRight
 } from 'lucide-react';
+
+const clayShadow = '0 10px 30px -12px rgba(0, 0, 0, 0.1), inset 0 2px 4px rgba(255, 255, 255, 1), inset 0 -2px 4px rgba(0, 0, 0, 0.05)';
+const clayCardShadow = '0 8px 24px -8px rgba(0, 0, 0, 0.08), inset 0 2px 4px rgba(255, 255, 255, 1), inset 0 -1px 3px rgba(0, 0, 0, 0.04)';
+const clayButtonShadow = '4px 4px 10px rgba(0,0,0,0.08), -4px -4px 10px rgba(255,255,255,0.9)';
+const clayInnerShadow = '0 4px 16px -4px rgba(0, 0, 0, 0.06), inset 0 1px 3px rgba(255, 255, 255, 0.9), inset 0 -1px 2px rgba(0, 0, 0, 0.03)';
 
 export default function CompanyClient({ slug }: { slug: string }) {
   const [company, setCompany] = useState<Company | null>(null);
@@ -25,7 +30,7 @@ export default function CompanyClient({ slug }: { slug: string }) {
           api.get<{ data: Company }>(`/companies/${slug}`),
         ]);
         setCompany(companyRes.data.data);
-        
+
         if (companyRes.data.data) {
           const [productsRes, reviewsRes] = await Promise.all([
             api.get<{ data: Product[] }>(`/companies/${slug}/products`),
@@ -74,9 +79,9 @@ export default function CompanyClient({ slug }: { slug: string }) {
     return (
       <div className="container mx-auto px-4 py-8">
         <div className="animate-pulse">
-          <div className="h-64 bg-gray-200 rounded-xl mb-8"></div>
-          <div className="h-8 bg-gray-200 rounded w-1/3 mb-4"></div>
-          <div className="h-6 bg-gray-200 rounded w-1/2"></div>
+          <div className="h-64 bg-gray-200 rounded-3xl mb-8"></div>
+          <div className="h-8 bg-gray-200 rounded-2xl w-1/3 mb-4"></div>
+          <div className="h-6 bg-gray-200 rounded-2xl w-1/2"></div>
         </div>
       </div>
     );
@@ -89,7 +94,12 @@ export default function CompanyClient({ slug }: { slug: string }) {
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Empresa não encontrada</h1>
         <p className="text-gray-500 mb-6">A empresa que você procura não existe ou foi removida.</p>
         <Link href="/empresas">
-          <Button>Ver Empresas</Button>
+          <Button
+            className="rounded-xl"
+            style={{ boxShadow: clayButtonShadow }}
+          >
+            Ver Empresas
+          </Button>
         </Link>
       </div>
     );
@@ -103,50 +113,57 @@ export default function CompanyClient({ slug }: { slug: string }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       )}
-      
-      <div className="h-64 bg-gradient-to-r from-emerald-600 to-emerald-800 relative">
+
+      <div className="h-64 bg-gradient-to-r from-emerald-600 to-emerald-800 relative rounded-b-3xl overflow-hidden">
         {company.cover_url && (
           <img src={company.cover_url} alt="" className="w-full h-full object-cover" />
         )}
       </div>
 
       <div className="container mx-auto px-4 -mt-20 relative z-10">
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+        {/* Company Header / Hero Card */}
+        <div
+          className="bg-white/90 backdrop-blur-sm rounded-3xl p-6 mb-8 border border-gray-100"
+          style={{ boxShadow: clayShadow }}
+        >
           <div className="flex flex-col md:flex-row md:items-start gap-6">
-            <div className="w-32 h-32 bg-gray-100 rounded-xl flex items-center justify-center -mt-16 md:-mt-20 border-4 border-white">
+            <div
+              className="w-32 h-32 bg-gray-50 rounded-2xl flex items-center justify-center -mt-16 md:-mt-20 border-4 border-white"
+              style={{ boxShadow: clayCardShadow }}
+            >
               {company.logo_url ? (
-                <img src={company.logo_url} alt={company.name} className="w-full h-full object-cover rounded-xl" />
+                <img src={company.logo_url} alt={company.name} className="w-full h-full object-cover rounded-2xl" />
               ) : (
                 <Package className="w-16 h-16 text-gray-400" />
               )}
             </div>
-            
+
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
                 <h1 className="text-2xl font-bold text-gray-900">{company.name}</h1>
                 {company.verified && (
-                  <span className="bg-emerald-100 text-emerald-700 text-sm px-2 py-1 rounded-full flex items-center">
+                  <span className="bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-sm px-3 py-1 rounded-full flex items-center font-medium">
                     <Shield className="w-4 h-4 mr-1" />
                     Verificada
                   </span>
                 )}
               </div>
-              
-              <div className="flex flex-wrap items-center gap-4 text-gray-600 mb-4">
+
+              <div className="flex flex-wrap items-center gap-3 text-gray-600 mb-4">
                 {company.city_name && (
-                  <span className="flex items-center">
-                    <MapPin className="w-4 h-4 mr-1" />
+                  <span className="bg-emerald-50 rounded-full px-4 py-1.5 flex items-center text-sm">
+                    <MapPin className="w-4 h-4 mr-1 text-emerald-600" />
                     {company.city_name}
                   </span>
                 )}
                 {company.average_rating && (
-                  <span className="flex items-center">
+                  <span className="bg-emerald-50 rounded-full px-4 py-1.5 flex items-center text-sm">
                     <Star className="w-4 h-4 text-yellow-400 fill-yellow-400 mr-1" />
                     {company.average_rating} ({company.reviews_count} avaliações)
                   </span>
                 )}
-                <span className="flex items-center">
-                  <Package className="w-4 h-4 mr-1" />
+                <span className="bg-emerald-50 rounded-full px-4 py-1.5 flex items-center text-sm">
+                  <Package className="w-4 h-4 mr-1 text-emerald-600" />
                   {company.products_count || 0} produtos
                 </span>
               </div>
@@ -155,24 +172,43 @@ export default function CompanyClient({ slug }: { slug: string }) {
 
               <div className="flex flex-wrap gap-3">
                 {company.phone && (
-                  <Button variant="outline" size="sm">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-xl border-gray-100"
+                    style={{ boxShadow: clayButtonShadow }}
+                  >
                     <Phone className="w-4 h-4 mr-2" />
                     {company.phone}
                   </Button>
                 )}
                 {company.email && (
-                  <Button variant="outline" size="sm">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-xl border-gray-100"
+                    style={{ boxShadow: clayButtonShadow }}
+                  >
                     <Mail className="w-4 h-4 mr-2" />
                     Email
                   </Button>
                 )}
                 {company.website && (
-                  <Button variant="outline" size="sm">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="rounded-xl border-gray-100"
+                    style={{ boxShadow: clayButtonShadow }}
+                  >
                     <Globe className="w-4 h-4 mr-2" />
                     Website
                   </Button>
                 )}
-                <Button size="sm">
+                <Button
+                  size="sm"
+                  className="rounded-xl"
+                  style={{ boxShadow: clayButtonShadow }}
+                >
                   <MessageCircle className="w-4 h-4 mr-2" />
                   Enviar Mensagem
                 </Button>
@@ -181,13 +217,17 @@ export default function CompanyClient({ slug }: { slug: string }) {
           </div>
         </div>
 
+        {/* Categories Section */}
         {company.categories && company.categories.length > 0 && (
           <section className="mb-8">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Atuação</h2>
             <div className="flex flex-wrap gap-2">
               {company.categories.map((cat) => (
                 <Link key={cat.id} href={`/busca?categoria=${cat.slug}`}>
-                  <span className="bg-gray-100 text-gray-700 px-4 py-2 rounded-full hover:bg-emerald-100 hover:text-emerald-700 transition-colors">
+                  <span
+                    className="bg-white/80 text-gray-700 px-4 py-2 rounded-full hover:bg-emerald-50 hover:text-emerald-700 transition-all duration-300 border border-gray-100 inline-block"
+                    style={{ boxShadow: clayInnerShadow }}
+                  >
                     {cat.name}
                   </span>
                 </Link>
@@ -196,6 +236,7 @@ export default function CompanyClient({ slug }: { slug: string }) {
           </section>
         )}
 
+        {/* Products Section */}
         <section className="mb-12">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-900">Produtos</h2>
@@ -203,13 +244,16 @@ export default function CompanyClient({ slug }: { slug: string }) {
               Ver todos <ArrowRight className="w-4 h-4 ml-1" />
             </Link>
           </div>
-          
+
           {products.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {products.slice(0, 8).map((product) => (
                 <Link key={product.id} href={`/produto/${product.slug}`}>
-                  <Card className="hover:shadow-lg transition-shadow overflow-hidden">
-                    <div className="aspect-video bg-gray-200 relative">
+                  <Card
+                    className="rounded-2xl overflow-hidden hover:-translate-y-1 transition-all duration-300 border border-gray-100"
+                    style={{ boxShadow: clayCardShadow }}
+                  >
+                    <div className="aspect-video bg-gray-100 relative">
                       {product.images?.[0] ? (
                         <img src={product.images[0]} alt={product.name} className="object-cover w-full h-full" />
                       ) : (
@@ -218,7 +262,7 @@ export default function CompanyClient({ slug }: { slug: string }) {
                         </div>
                       )}
                       {product.featured && (
-                        <span className="absolute top-2 left-2 bg-emerald-600 text-white text-xs px-2 py-1 rounded">
+                        <span className="absolute top-2 left-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-xs px-3 py-1 rounded-full font-medium">
                           Destaque
                         </span>
                       )}
@@ -241,7 +285,10 @@ export default function CompanyClient({ slug }: { slug: string }) {
               ))}
             </div>
           ) : (
-            <Card>
+            <Card
+              className="rounded-2xl border border-gray-100"
+              style={{ boxShadow: clayInnerShadow }}
+            >
               <CardContent className="p-6 text-center">
                 <Package className="w-12 h-12 text-gray-300 mx-auto mb-2" />
                 <p className="text-gray-500">Nenhum produto cadastrado</p>
@@ -250,29 +297,34 @@ export default function CompanyClient({ slug }: { slug: string }) {
           )}
         </section>
 
-        <section>
+        {/* Reviews Section */}
+        <section className="pb-12">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-900">Avaliações</h2>
           </div>
-          
+
           {reviews.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {reviews.slice(0, 6).map((review) => (
-                <Card key={review.id}>
+                <Card
+                  key={review.id}
+                  className="rounded-2xl border border-gray-100"
+                  style={{ boxShadow: clayInnerShadow }}
+                >
                   <CardContent className="p-6">
                     <div className="flex items-start justify-between mb-2">
                       <div>
                         <p className="font-semibold text-gray-900">{review.user_name}</p>
                         <div className="flex items-center mt-1">
                           {Array.from({ length: 5 }).map((_, i) => (
-                            <Star 
-                              key={i} 
-                              className={`w-4 h-4 ${i < review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`} 
+                            <Star
+                              key={i}
+                              className={`w-4 h-4 ${i < review.rating ? 'text-yellow-400 fill-yellow-400' : 'text-gray-300'}`}
                             />
                           ))}
                         </div>
                       </div>
-                      <span className="text-sm text-gray-500">{formatDate(review.created_at)}</span>
+                      <span className="text-sm text-gray-400 bg-gray-50 rounded-full px-3 py-1">{formatDate(review.created_at)}</span>
                     </div>
                     {review.title && (
                       <p className="font-medium text-gray-900 mb-1">{review.title}</p>
@@ -285,7 +337,10 @@ export default function CompanyClient({ slug }: { slug: string }) {
               ))}
             </div>
           ) : (
-            <Card>
+            <Card
+              className="rounded-2xl border border-gray-100"
+              style={{ boxShadow: clayInnerShadow }}
+            >
               <CardContent className="p-6 text-center">
                 <Star className="w-12 h-12 text-gray-300 mx-auto mb-2" />
                 <p className="text-gray-500">Nenhuma avaliação ainda</p>
