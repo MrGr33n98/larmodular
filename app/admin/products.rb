@@ -1,9 +1,9 @@
 ActiveAdmin.register Product do
   menu label: 'Produtos'
 
-  permit_params :name, :slug, :description, :base_price, :discount_price, :images, :specifications,
-                :highlights, :video_url, :category_id, :company_id, :region_id, :city_id,
-                :active, :featured, :views_count, :favorites_count
+  permit_params :name, :slug, :description, :base_price, :video_url, :category_id, :company_id,
+                :active, :featured, :warranty_months, :lead_time_days, :area_m2,
+                :bedrooms, :bathrooms
 
   filter :name, label: 'Nome'
   filter :company, label: 'Empresa'
@@ -29,15 +29,14 @@ ActiveAdmin.register Product do
       f.input :slug, label: 'Slug'
       f.input :description, label: 'Descrição'
       f.input :base_price, label: 'Preço Base'
-      f.input :discount_price, label: 'Preço com Desconto'
-      f.input :images, label: 'Imagens', as: :text
-      f.input :specifications, label: 'Especificações', as: :text
-      f.input :highlights, label: 'Destaques', as: :text
       f.input :video_url, label: 'URL do Vídeo'
+      f.input :warranty_months, label: 'Garantia (meses)'
+      f.input :lead_time_days, label: 'Prazo de Entrega (dias)'
+      f.input :area_m2, label: 'Área (m²)'
+      f.input :bedrooms, label: 'Quartos'
+      f.input :bathrooms, label: 'Banheiros'
       f.input :category, label: 'Categoria'
       f.input :company, label: 'Empresa'
-      f.input :region, label: 'Região'
-      f.input :city, label: 'Cidade'
       f.input :active, label: 'Ativo'
       f.input :featured, label: 'Destaque'
     end

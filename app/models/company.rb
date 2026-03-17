@@ -1,7 +1,6 @@
 class Company < ApplicationRecord
   belongs_to :region, optional: true
   belongs_to :city, optional: true
-  belongs_to :user, optional: true
   has_many :products
   has_many :reviews
   has_many :leads

@@ -1,8 +1,6 @@
 class Product < ApplicationRecord
   belongs_to :company
   belongs_to :category
-  belongs_to :region, optional: true
-  belongs_to :city, optional: true
   has_many :reviews
   has_many :favorites
   has_many :product_views
@@ -30,8 +28,7 @@ class Product < ApplicationRecord
   end
   
   def price_with_discount
-    return base_price unless discount_price.present?
-    discount_price
+    base_price
   end
   
   def self.friendly_find(param)
