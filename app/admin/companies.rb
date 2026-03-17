@@ -1,8 +1,8 @@
 ActiveAdmin.register Company do
   menu label: 'Empresas'
 
-  permit_params :name, :slug, :description, :logo_url, :cover_url, :website, :phone, :email,
-                :address, :zip_code, :region_id, :city_id, :status, :verified, :featured, :active
+  permit_params :name, :slug, :description, :logo_url, :banner_url, :website, :phone, :email,
+                :address, :zip_code, :region_id, :city_id, :status, :verified, :featured
 
   filter :name, label: 'Nome'
   filter :region, label: 'Região'
@@ -20,7 +20,6 @@ ActiveAdmin.register Company do
     column :status, label: 'Status'
     column :verified, label: 'Verificada'
     column :featured, label: 'Destaque'
-    column :active, label: 'Ativa'
     actions
   end
 
@@ -30,7 +29,7 @@ ActiveAdmin.register Company do
       f.input :slug, label: 'Slug'
       f.input :description, label: 'Descrição'
       f.input :logo_url, label: 'Logo URL'
-      f.input :cover_url, label: 'Capa URL'
+      f.input :banner_url, label: 'Banner URL'
       f.input :website, label: 'Website'
       f.input :phone, label: 'Telefone'
       f.input :email, label: 'Email'
@@ -41,7 +40,6 @@ ActiveAdmin.register Company do
       f.input :status, label: 'Status', as: :select, collection: ['pending', 'approved', 'rejected']
       f.input :verified, label: 'Verificada'
       f.input :featured, label: 'Destaque'
-      f.input :active, label: 'Ativa'
     end
     f.actions
   end
