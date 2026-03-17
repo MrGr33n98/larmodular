@@ -21,11 +21,5 @@ class User < ApplicationRecord
   # It's important to ensure that notifications mentioning us are accessible.
   has_many :notification_mentions, as: :record, dependent: :destroy, class_name: 'Noticed::Event'
 
-  def self.ransackable_attributes(_auth_object = nil)
-    %w[name email] # Allow searching by name and email
-  end
 
-  def self.ransackable_associations(_auth_object = nil)
-    [] # We don't have any searchable associations in this case
-  end
 end

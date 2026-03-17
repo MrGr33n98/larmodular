@@ -26,5 +26,5 @@ test:
 production:
   <<: *default
   database: larmodular_production
-  username: larmodular
-  password: <%= ENV["LARMODULAR_DATABASE_PASSWORD"] %>
+  username: postgres
+  password: <%= ENV["POSTGRES_PASSWORD"] %>

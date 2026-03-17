@@ -11,13 +11,7 @@ class Post < ApplicationRecord
   scope :published, -> { where.not(published_at: nil) }
   scope :unpublished, -> { where(published_at: nil) }
 
-  def self.ransackable_attributes(_auth_object = nil)
-    %w[title body comments user] # Allow searching by title, body, comments  and user
-  end
 
-  def self.ransackable_associations(_auth_object = nil)
-    [] # We don't have any searchable associations in this case
-  end
 
   private
 

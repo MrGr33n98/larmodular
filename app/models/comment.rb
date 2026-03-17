@@ -8,13 +8,7 @@ class Comment < ApplicationRecord
   has_many :notification_mentions, as: :record, dependent: :destroy, class_name: 'Noticed::Event'
   validate :no_curse_words
 
-  def self.ransackable_attributes(_auth_object = nil)
-    %w[user_id post_id] # Allow searching by user_id, title and body
-  end
 
-  def self.ransackable_associations(_auth_object = nil)
-    [] # We don't have any searchable associations in this case
-  end
 
   private
 
