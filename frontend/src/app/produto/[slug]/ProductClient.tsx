@@ -9,7 +9,6 @@ import { api } from '@/lib/api';
 import { toast } from '@/components/ui/toast';
 import { Product, Review } from '@/types';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { formatPrice, formatDate } from '@/lib/utils';
 import {
@@ -324,15 +323,15 @@ export default function ProductClient({ slug }: { slug: string }) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
         {/* Images */}
         <div>
-          <div className="aspect-square bg-gray-100 rounded-2xl overflow-hidden mb-4 relative"
-               style={{ boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}>
+          <div className="aspect-square bg-gray-100 rounded-3xl overflow-hidden mb-4 relative"
+               style={{ boxShadow: '0 10px 30px -12px rgba(0, 0, 0, 0.1), inset 0 2px 4px rgba(255, 255, 255, 1), inset 0 -2px 4px rgba(0, 0, 0, 0.05)' }}>
             <img
               src={images[currentImage]}
               alt={product.name}
               className="w-full h-full object-cover"
             />
             {product.featured && (
-              <span className="absolute top-4 left-4 bg-emerald-600 text-white text-sm px-3 py-1 rounded-full">
+              <span className="absolute top-4 left-4 bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-sm font-medium px-4 py-1.5 rounded-full shadow-lg">
                 Destaque
               </span>
             )}
@@ -407,23 +406,25 @@ export default function ProductClient({ slug }: { slug: string }) {
             </Button>
           </div>
 
-          <div className="space-y-3">
-            <div className="flex items-center text-gray-600">
+          <div className="space-y-3 p-5 rounded-2xl bg-emerald-50/50 border border-emerald-100/50"
+               style={{ boxShadow: 'inset 4px 4px 8px rgba(0,0,0,0.03), inset -4px -4px 8px rgba(255,255,255,0.8)' }}>
+            <div className="flex items-center text-gray-700">
               <Shield className="w-5 h-5 mr-3 text-emerald-600" />
-              <span>Compra segura</span>
+              <span className="font-medium text-sm">Compra segura</span>
             </div>
-            <div className="flex items-center text-gray-600">
+            <div className="flex items-center text-gray-700">
               <Truck className="w-5 h-5 mr-3 text-emerald-600" />
-              <span>Frete calculado para seu CEP</span>
+              <span className="font-medium text-sm">Frete calculado para seu CEP</span>
             </div>
-            <div className="flex items-center text-gray-600">
+            <div className="flex items-center text-gray-700">
               <Check className="w-5 h-5 mr-3 text-emerald-600" />
-              <span>Garantia do fabricante</span>
+              <span className="font-medium text-sm">Garantia do fabricante</span>
             </div>
           </div>
 
           {product.company_name && (
-            <div className="mt-8 p-4 bg-gray-50 rounded-2xl">
+            <div className="mt-8 p-5 rounded-2xl bg-white/90 backdrop-blur-sm border border-white/80"
+                 style={{ boxShadow: '0 10px 30px -12px rgba(0, 0, 0, 0.1), inset 0 2px 4px rgba(255, 255, 255, 1), inset 0 -2px 4px rgba(0, 0, 0, 0.05)' }}>
               <p className="text-sm text-gray-500 mb-2">Vendido por</p>
               <Link
                 href={`/empresa/${product.company_name?.toLowerCase().replace(/\s+/g, '-')}`}
@@ -450,8 +451,9 @@ export default function ProductClient({ slug }: { slug: string }) {
       {product.specifications && Object.keys(product.specifications).length > 0 && (
         <section className="mb-12">
           <h2 className="text-2xl font-bold text-gray-900 mb-6">Especificações</h2>
-          <Card>
-            <CardContent className="p-6">
+          <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/80 p-6"
+               style={{ boxShadow: '0 10px 30px -12px rgba(0, 0, 0, 0.1), inset 0 2px 4px rgba(255, 255, 255, 1), inset 0 -2px 4px rgba(0, 0, 0, 0.05)' }}>
+            <div>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {Object.entries(product.specifications).map(([key, value]) => (
                   <div key={key} className="border-b border-gray-100 pb-2">
@@ -460,8 +462,8 @@ export default function ProductClient({ slug }: { slug: string }) {
                   </div>
                 ))}
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </section>
       )}
 
@@ -473,8 +475,9 @@ export default function ProductClient({ slug }: { slug: string }) {
         {reviews.length > 0 ? (
           <div className="space-y-4">
             {reviews.slice(0, 5).map((review) => (
-              <Card key={review.id}>
-                <CardContent className="p-6">
+              <div key={review.id} className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/80 p-6"
+                   style={{ boxShadow: 'inset 4px 4px 8px rgba(0,0,0,0.03), inset -4px -4px 8px rgba(255,255,255,0.8)' }}>
+                <div>
                   <div className="flex items-start justify-between mb-2">
                     <div>
                       <p className="font-semibold text-gray-900">{review.user_name}</p>
@@ -491,16 +494,15 @@ export default function ProductClient({ slug }: { slug: string }) {
                   </div>
                   {review.title && <p className="font-medium text-gray-900 mb-1">{review.title}</p>}
                   {review.comment && <p className="text-gray-600">{review.comment}</p>}
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         ) : (
-          <Card>
-            <CardContent className="p-6 text-center">
-              <p className="text-gray-500">Nenhuma avaliação ainda</p>
-            </CardContent>
-          </Card>
+          <div className="bg-white/90 backdrop-blur-sm rounded-2xl border border-white/80 p-6 text-center"
+               style={{ boxShadow: 'inset 4px 4px 8px rgba(0,0,0,0.03), inset -4px -4px 8px rgba(255,255,255,0.8)' }}>
+            <p className="text-gray-500">Nenhuma avaliação ainda</p>
+          </div>
         )}
       </section>
 
@@ -511,8 +513,9 @@ export default function ProductClient({ slug }: { slug: string }) {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {relatedProducts.map((prod) => (
               <Link key={prod.id} href={`/produto/${prod.slug}`}>
-                <Card className="hover:shadow-lg transition-shadow overflow-hidden">
-                  <div className="aspect-video bg-gray-200 relative">
+                <div className="bg-white rounded-2xl border border-white/80 overflow-hidden hover:-translate-y-1 transition-all duration-300"
+                     style={{ boxShadow: '0 10px 30px -12px rgba(0, 0, 0, 0.1), inset 0 2px 4px rgba(255, 255, 255, 1), inset 0 -2px 4px rgba(0, 0, 0, 0.05)' }}>
+                  <div className="aspect-video bg-gray-100 relative">
                     {prod.images?.[0] ? (
                       <img src={prod.images[0]} alt={prod.name} className="object-cover w-full h-full" />
                     ) : (
@@ -521,12 +524,12 @@ export default function ProductClient({ slug }: { slug: string }) {
                       </div>
                     )}
                   </div>
-                  <CardContent className="p-4">
-                    <p className="text-sm text-gray-500">{prod.category_name}</p>
+                  <div className="p-4">
+                    <p className="text-sm text-gray-400">{prod.category_name}</p>
                     <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">{prod.name}</h3>
                     <p className="text-lg font-bold text-emerald-600">{formatPrice(prod.base_price)}</p>
-                  </CardContent>
-                </Card>
+                  </div>
+                </div>
               </Link>
             ))}
           </div>
