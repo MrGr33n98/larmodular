@@ -156,7 +156,7 @@ function SearchContent() {
             >
               <option value="">Todas as Categorias</option>
               {categories.map((cat) => (
-                <option key={cat.id} value={cat.slug}>{cat.name}</option>
+                <option key={cat.id} value={String(cat.id)}>{cat.name}</option>
               ))}
             </select>
             <Button variant="outline">
@@ -207,8 +207,8 @@ function SearchContent() {
                     <input
                       type="radio"
                       name="categoria"
-                      checked={filters.categoria === cat.slug}
-                      onChange={() => handleFilterChange('categoria', cat.slug)}
+                      checked={filters.categoria === String(cat.id)}
+                      onChange={() => handleFilterChange('categoria', String(cat.id))}
                       className="mr-2"
                     />
                     <span className="text-sm text-gray-600">{cat.name}</span>
