@@ -6,7 +6,12 @@ class IntentEvent < ApplicationRecord
   belongs_to :region, optional: true
   belongs_to :city, optional: true
 
-  EVENT_TYPES = %w[page_view product_view search calculator_use simulator_use quote_request favorite_add share contact view_comparison add_to_cart].freeze
+  EVENT_TYPES = %w[
+    page_view product_view search_query price_view
+    calculator_use simulator_use quote_request favorite_add
+    phone_click whatsapp_click email_click compare_add review_read
+    share contact view_comparison add_to_cart
+  ].freeze
 
   validates :event_type, presence: true, inclusion: { in: EVENT_TYPES }
 
